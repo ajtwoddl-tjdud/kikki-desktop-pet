@@ -566,13 +566,6 @@ Add-Menu '뽀모도로 남은 시간' {
 Add-Menu '뽀모도로 일시정지 / 계속' { Toggle-PomodoroPause }
 Add-Menu '뽀모도로 끝내기' { Stop-Pomodoro }
 [void]$menu.Items.Add((New-Object Windows.Controls.Separator))
-Add-Menu '너라도 놀아 · 수업 50분' { Stop-Pomodoro -Quiet; $script:classEnd=[DateTime]::Now.AddMinutes(50); $script:auto=$true; Say-Random 'classStart' }
-Add-Menu '수업 남은 시간' {
-    if ($null -ne $script:classEnd) { Say ('{0}분 뒤 자유다. 야르.' -f [Math]::Max(0,[Math]::Ceiling(($script:classEnd-[DateTime]::Now).TotalMinutes))) }
-    else { Say '지금은 쉬는 시간이야. 야르.' }
-}
-Add-Menu '수업 타이머 끝내기' { $script:classEnd=$null; Say '알았어. 편하게 쉬자.' }
-[void]$menu.Items.Add((New-Object Windows.Controls.Separator))
 Add-Menu '크기 바꾸기 · 작게 / 크게' {
     Stop-Roam $script:clock.Elapsed.TotalSeconds
     if ($script:scale -eq 1.0) { $script:scale=0.75 } else { $script:scale=1.0 }

@@ -265,16 +265,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add("반대쪽 끝까지 산책 가봐") { [self] in state.motion = true; state.roaming = true; state.clearScene(); startWalk(across: true) }
         add("자동 산책 켜기 / 끄기") { [self] in state.roaming.toggle(); state.walk = nil; state.nextWalk = state.time + Double.random(in: 120...240) }
         menu.addItem(.separator())
-        add("너라도 놀아 · 수업 50분") { [self] in
-            state.classEnd = Date().addingTimeInterval(50 * 60); state.pendingClassEnd = false
-            state.automatic = true; state.say("잘 듣고 와. 난 여기 있을게.")
-        }
-        add("수업 남은 시간") { [self] in
-            if let end = state.classEnd { state.say("\(max(0, Int(ceil(end.timeIntervalSinceNow / 60))))분 뒤 자유다. 야르.") }
-            else { state.say("지금은 쉬는 시간이야. 야르.") }
-        }
-        add("수업 타이머 끝내기") { [self] in state.classEnd = nil; state.pendingClassEnd = false; state.say("알았어. 편하게 쉬자.") }
-        menu.addItem(.separator())
         add("크기 바꾸기 · 작게 / 크게") { [self] in
             state.walk = nil
             let scale = panel.frame.width > 200 ? 0.75 : 1.0
