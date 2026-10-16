@@ -1,23 +1,39 @@
-﻿# Activities last minutes; small movements never count as a new activity.
+﻿# Independent minute-scale clocks keep activity changes from postponing walks and details.
 $script:quietUntil=0.0
+$script:previousActivity=-1
 function Get-ActivitySeconds([int]$mode) {
- switch ($mode) {
-  0 { return $script:rng.Next(75,151) }
-  1 { return $script:rng.Next(360,841) }
-  2 { return $script:rng.Next(720,1501) }
-  3 { return $script:rng.Next(300,721) }
+ return $script:rng.Next(120,241)
+}
+function Get-NextActivityMode([int]$mode,[int]$previous,[int]$roll) {
+ if ($mode -eq 2) { return 1 }
+ $choices=@(0..3 | Where-Object { $_ -ne $mode -and $_ -ne $previous })
+ return $choices[$roll % $choices.Count]
+}
+function Get-WalkDestination([double]$from,[double]$low,[double]$high,[bool]$across,[double]$offset) {
+ $high=[Math]::Max($low,$high)
+ if ($across) {
+  if ($from -ge ($low+$high)/2) { return $low }
+  return $high
  }
+ $target=[Math]::Max($low,[Math]::Min($high,$from+$offset))
+ if ([Math]::Abs($target-$from) -lt 180) { $target=[Math]::Max($low,[Math]::Min($high,$from-$offset)) }
+ return $target
+}
+function Test-RoamDue([double]$t) {
+ return $script:roamEnabled -and $script:motion -and $script:mode -ne 2 -and $t -ge $script:nextRoam
+}
+function Get-DueDetail([double]$t) {
+ if (-not $script:motion -or $t -lt $script:quietUntil -or $script:pressed -or $script:dragging -or $t -lt $script:attentionEnd -or $t -lt $script:sulkEnd -or $t -lt $script:expressionEnd -or $null -ne $script:poseTransition -or $null -ne $script:roam -or $null -ne $script:rest -or $null -ne $script:dropStart -or $null -ne $script:backTurn -or (Test-RoamDue $t)) { return '' }
+ $action=''; $deadline=[double]::PositiveInfinity
+ if ($script:nextRest -le $t) { $action='rest'; $deadline=$script:nextRest }
+ if ($script:mode -eq 1 -and $script:nextDrop -le $t -and $script:nextDrop -lt $deadline) { $action='drop'; $deadline=$script:nextDrop }
+ if ($script:mode -ne 2 -and $script:nextExpression -le $t -and $script:nextExpression -lt $deadline) { $action='expression'; $deadline=$script:nextExpression }
+ if ($script:auto -and $script:mode -ne 2 -and $script:nextBack -le $t -and $script:nextBack -lt $deadline) { $action='back' }
+ return $action
 }
 function Continue-Life {
- # Often stay with the same pastime; never cycle through the pose list.
- $roll=$script:rng.Next(100)
- $next=switch ($script:mode) {
-  0 { if ($roll -lt 70) { 1 } else { 3 } }
-  1 { if ($roll -lt 45) { 1 } elseif ($roll -lt 80) { 2 } else { 3 } }
-  2 { if ($roll -lt 35) { 2 } else { 1 } }
-  3 { if ($roll -lt 40) { 3 } elseif ($roll -lt 85) { 1 } else { 0 } }
- }
- if ($next -eq $script:mode) {
-  $script:nextChange=[DateTime]::Now.AddSeconds((Get-ActivitySeconds $next))
- } else { Set-Pose $next }
+ $finishedGame=($script:mode -eq 3)
+ $next=Get-NextActivityMode $script:mode $script:previousActivity ($script:rng.Next(100))
+ Set-Pose $next
+ if ($finishedGame) { Say-Random 'gameLoss' } else { Say-Random }
 }

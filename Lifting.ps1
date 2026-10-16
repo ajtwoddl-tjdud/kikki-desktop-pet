@@ -71,11 +71,11 @@ function End-PetDrag([double]$t, [switch]$Cancel) {
  if ($Cancel) { $script:sulkEnd=0; Keep-OnScreen; return }
  if ($moved) {
   Keep-OnScreen
-  $script:homeX=$script:window.Left; $script:nextRoam=$t+120
+  $script:homeX=$script:window.Left; $script:nextRoam=$t+$script:rng.Next(120,241)
   if ($wasLifted) {
-   $script:sulkEnd=$t+1.8; $script:nextExpression=$t+180
-   $script:nextDrop=$t+480; $script:nextRest=$t+120
-   $script:quietUntil=$t+90
+   $script:sulkEnd=$t+1.8; $script:nextExpression=$t+$script:rng.Next(120,241)
+   $script:nextDrop=$t+$script:rng.Next(120,241); $script:nextRest=$t+$script:rng.Next(120,241)
+   $script:quietUntil=[Math]::Max($script:quietUntil,$t+(Get-ActivitySeconds $script:mode))
    Say-Random 'putDown'
   } else { Say-Random 'drag' }
  } else { React-ToPoke $t }

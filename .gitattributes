@@ -2,4 +2,9 @@
 *.ps1 text eol=crlf
 *.vbs text eol=crlf
 *.md text eol=lf
+*.swift text eol=lf
+*.sh text eol=lf
+*.command text eol=lf
+*.plist text eol=lf
+*.cs text eol=lf
 *.png binary

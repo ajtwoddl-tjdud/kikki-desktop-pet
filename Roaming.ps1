@@ -1,7 +1,7 @@
 ﻿# Small local walks: stretch, toddle a few steps, settle back into the activity.
 $script:roamEnabled=$true
 $script:roam=$null
-$script:nextRoam=45.0
+$script:nextRoam=$script:rng.Next(120,241)
 $script:homeX=$null
 $script:walkSprites=@()
 $walkBitmap=[Windows.Media.Imaging.BitmapImage]::new()
@@ -89,31 +89,23 @@ function Get-WalkDistance([double]$time, [double]$total, [double]$duration) {
     }
     return $speed*($time-$ramp/2)
 }
-function Stop-Roam([double]$t, [int]$restSeconds=240) {
+function Stop-Roam([double]$t, [int]$restSeconds=0) {
+    if ($restSeconds -eq 0) { $restSeconds=$script:rng.Next(120,241) }
     $script:roam=$null
     $script:nextRoam=$t+$restSeconds
 }
 function Start-Roam([double]$t, [switch]$Across) {
     if ($null -ne $script:poseTransition) { return }
     if ($null -ne $script:backTurn) { return }
-    if (-not $script:roamEnabled -or -not $script:motion -or $script:dragging -or $script:pressed -or $null -ne $script:roam -or $null -ne $script:dropStart -or $null -ne $script:rest -or $t -lt $script:attentionEnd) { return }
+    if ($t -lt $script:expressionEnd -or -not $script:roamEnabled -or -not $script:motion -or $script:dragging -or $script:pressed -or $null -ne $script:roam -or $null -ne $script:dropStart -or $null -ne $script:rest -or $t -lt $script:attentionEnd) { return }
     $area=[Windows.SystemParameters]::WorkArea
     if ($null -eq $script:homeX) { $script:homeX=$script:window.Left }
-    # Explore farther horizontally while remaining in the screen work area.
     $low=$area.Left+12
-    $high=$area.Right-$script:window.Width-12
-    $direction=if ($script:rng.Next(2) -eq 0) { -1 } else { 1 }
-    $distance=$script:rng.Next(260,561)
-    $destination=[Math]::Max($low,[Math]::Min($high,$script:window.Left+$direction*$distance))
-    if ([Math]::Abs($destination-$script:window.Left) -lt 180) {
-        $destination=[Math]::Max($low,[Math]::Min($high,$script:window.Left-$direction*$distance))
-    }
-    # Occasionally cross to the far edge instead of taking a local stroll.
-    $crossing=$Across -or $script:rng.Next(100) -lt 35
-    if ($crossing) {
-        $destination=if ($script:window.Left -ge ($low+$high)/2) { $low } else { $high }
-    }
-    if ([Math]::Abs($destination-$script:window.Left) -lt 12) { $script:nextRoam=$t+60; return }
+    $high=[Math]::Max($low,$area.Right-$script:window.Width-12)
+    $offset=(1-2*$script:rng.Next(2))*$script:rng.Next(260,561)
+    $crossing=[bool]$Across
+    $destination=Get-WalkDestination $script:window.Left $low $high $crossing $offset
+    if ([Math]::Abs($destination-$script:window.Left) -lt 12) { $script:nextRoam=$t+$script:rng.Next(120,241); return }
     $script:roam=@{
         start=$t; fromX=$script:window.Left; toX=$destination
         seconds=[Math]::Abs($destination-$script:window.Left)/104+0.45
@@ -122,14 +114,12 @@ function Start-Roam([double]$t, [switch]$Across) {
         frameIndex=0; strideY=0.0; strideAngle=0.0
     }
     $script:expressionEnd=0
-    $script:quietUntil=$t+$script:roam.seconds+90
-    $script:nextExpression=$t+$script:roam.seconds+180
-    $script:nextDrop=$t+$script:roam.seconds+480
+    $script:quietUntil=[Math]::Max($script:quietUntil,$t+$script:roam.seconds+4.9)
     if ($script:rng.Next(3) -eq 0) { Say-Random 'walk' }
 }
 function Update-Roam([double]$t) {
     if ($null -eq $script:roam) {
-        if ($script:mode -ne 2 -and $t -ge $script:quietUntil -and $t -ge $script:nextRoam -and -not $SelfTest -and -not $script:pet.ContextMenu.IsOpen) { Start-Roam $t }
+        if ((Test-RoamDue $t) -and -not $SelfTest -and -not $script:pet.ContextMenu.IsOpen) { Start-Roam $t -Across }
         if ($null -eq $script:roam) { return }
     }
     if (-not $script:motion -or -not $script:roamEnabled -or $script:dragging) { Stop-Roam $t; return }
@@ -197,9 +187,7 @@ function Update-Roam([double]$t) {
         $transforms[0].ScaleY=1-0.018*[Math]::Sin($settle*[Math]::PI)
     } else {
         $script:window.Left=$script:roam.toX
-        Stop-Roam $t ($script:rng.Next(360,721))
+        Stop-Roam $t ($script:rng.Next(120,241))
 
-        $script:nextDrop=$t+$script:rng.Next(480,1201)
-        $script:nextExpression=$t+$script:rng.Next(180,421)
     }
 }
