@@ -59,12 +59,13 @@ $script:extraLines = @{
     walk = @('찌뿌둥하네. 쪼끔 걸을까.', '나 자리 좀 바꾸고 올게.', '짧은 다리도 쪼끔 써야지.', '나 산책 좀 하고 있을게.', '야르. 쪼끔 걷자.', '끼끼 산책 간다.')
 }
 $script:recentLines = New-Object 'System.Collections.Generic.Queue[string]'
-function Say-Random([string]$pool = 'pose') {
+function Say-Random([string]$pool = 'pose', [switch]$Poke) {
     if ($pool -eq 'pose') { $choices = $script:lines[$script:mode] }
     else { $choices = $script:extraLines[$pool] }
     $available = @($choices | Where-Object { -not $script:recentLines.Contains($_) })
     if ($available.Count -eq 0) { $available = @($choices | Where-Object { $_ -ne $script:words.Text }) }
-    Say ($available[$script:rng.Next($available.Count)])
+    $message=$available[$script:rng.Next($available.Count)]
+    if ($Poke) { Say-Poke $message } else { Say $message }
 }
 [xml]$xaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="232" Height="270" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize" Title="끼끼" UseLayoutRounding="True">
@@ -162,15 +163,15 @@ function React-ToPoke([double]$t) {
         if ($null -eq $script:roam.pausedAt) { $script:roam.pausedAt=$t }
         $script:roam.pauseUntil=$t+1.0
         $script:attentionStart=$t; $script:attentionEnd=$t+1.0
-        Say '왜? 뭐? 산책하는 끼끼 처음 봐?'
-        $script:bubbleUntil=[DateTime]::Now.AddSeconds(1.0)
+        Say-Poke '왜? 뭐? 산책하는 끼끼 처음 봐?'
+        if ($null -eq $script:pendingPoke) { $script:bubbleUntil=[DateTime]::Now.AddSeconds(1.0) }
         return
     }
     if ($null -ne $script:backTurn) {
         $script:backTurn.peek=$t
         $script:backTurn.until=[Math]::Max($script:backTurn.until,$t+5)
         $script:attentionStart=$t; $script:attentionEnd=$t+2.6
-        Say '왜, 뭐?'
+        Say-Poke '왜, 뭐?'
         $script:bubbleUntil=[DateTime]::Now.AddSeconds(3)
         return
     }
@@ -185,7 +186,7 @@ function React-ToPoke([double]$t) {
     $script:nextDrop=$t+$script:rng.Next(480,1201)
     $script:fallingPhone.Visibility='Hidden'
     if ($script:nextChange -lt [DateTime]::Now.AddSeconds(4)) { $script:nextChange=[DateTime]::Now.AddSeconds(4) }
-    Say-Random (@('eatPoke','phonePoke','sleepPoke','gamePoke')[$script:mode])
+    Say-Random (@('eatPoke','phonePoke','sleepPoke','gamePoke')[$script:mode]) -Poke
     $script:bubbleUntil=[DateTime]::Now.AddSeconds(3)
 }
 function Play-Expression([double]$t) {
@@ -395,6 +396,7 @@ function Update-BubblePosition {
     [Windows.Controls.Canvas]::SetTop($script:bubble,$top)
 }
 function Say([string]$message) {
+    $script:pendingPoke=$null
     $script:words.Text = $message
     $script:recentLines.Enqueue($message)
     while ($script:recentLines.Count -gt 5) { [void]$script:recentLines.Dequeue() }
@@ -438,6 +440,7 @@ function Keep-OnScreen {
 . (Join-Path $PSScriptRoot 'BackTurn.ps1')
 . (Join-Path $PSScriptRoot 'Behavior.ps1')
 . (Join-Path $PSScriptRoot 'Transitions.ps1')
+. (Join-Path $PSScriptRoot 'Pomodoro.ps1')
 Set-Pose 1 -Immediate
 $area = [System.Windows.SystemParameters]::WorkArea
 $window.Left = $area.Right - $window.Width - 24
@@ -449,6 +452,7 @@ $pet.Add_MouseEnter({
     if ($t-$script:lastHover -gt 90 -and $t -ge $script:nextExpression -and $script:rng.Next(4) -eq 0) { Play-Expression $t; $script:lastHover=$t }
 })
 $pet.Add_MouseLeftButtonDown({
+    $script:pendingPoke=$null
     $script:poseTransition=$null
     Stop-Rest $script:clock.Elapsed.TotalSeconds
     if ($null -ne $script:roam) { $script:roam.pausedAt=$script:clock.Elapsed.TotalSeconds }
@@ -507,7 +511,15 @@ Add-Menu '자동 산책 켜기 / 끄기' {
     else { Stop-Roam $script:clock.Elapsed.TotalSeconds; Say '응. 여기서 쉬고 있을게.' }
 }
 [void]$menu.Items.Add((New-Object Windows.Controls.Separator))
-Add-Menu '너라도 놀아 · 수업 50분' { $script:classEnd=[DateTime]::Now.AddMinutes(50); $script:auto=$true; Say-Random 'classStart' }
+Add-Menu '뽀모도로 설정 · 시작' { Show-PomodoroSettings }
+Add-Menu '뽀모도로 남은 시간' {
+    Update-Pomodoro
+    if ($null -ne $script:pomodoro) { Say (Get-PomodoroRemaining) } else { Say '돌아가는 뽀모도로는 없어. 먼저 시작해 줘.' }
+}
+Add-Menu '뽀모도로 일시정지 / 계속' { Toggle-PomodoroPause }
+Add-Menu '뽀모도로 끝내기' { Stop-Pomodoro }
+[void]$menu.Items.Add((New-Object Windows.Controls.Separator))
+Add-Menu '너라도 놀아 · 수업 50분' { Stop-Pomodoro -Quiet; $script:classEnd=[DateTime]::Now.AddMinutes(50); $script:auto=$true; Say-Random 'classStart' }
 Add-Menu '수업 남은 시간' {
     if ($null -ne $script:classEnd) { Say ('{0}분 뒤 자유다. 야르.' -f [Math]::Max(0,[Math]::Ceiling(($script:classEnd-[DateTime]::Now).TotalMinutes))) }
     else { Say '지금은 쉬는 시간이야. 야르.' }
@@ -524,7 +536,9 @@ Add-Menu '크기 바꾸기 · 작게 / 크게' {
 Add-Menu '끼끼 퇴근' { $script:window.Close() }
 $pet.ContextMenu = $menu
 function Toggle-PetVisibility {
+    if ($null -ne $script:pomoDialog) { $script:pomoDialog.Close() }
     if ($script:window.IsVisible) {
+        $script:pendingPoke=$null
         if ($script:pressed -or $script:dragging) { End-PetDrag $script:clock.Elapsed.TotalSeconds -Cancel }
         $script:pet.ContextMenu.IsOpen=$false
         $script:hiddenAt=[DateTime]::Now
@@ -539,6 +553,7 @@ function Toggle-PetVisibility {
         $script:window.ShowActivated=$false
         $script:window.Show()
         $script:clock.Start()
+        Present-PomodoroNotice
         if ($script:pendingClassEnd) {
             Say-Random 'classEnd'
             $script:bubbleUntil=[DateTime]::Now.AddSeconds(12)
@@ -552,6 +567,8 @@ $timer.Interval = [TimeSpan]::FromMilliseconds(33)
 $timer.Add_Tick({
     if ($null -ne $script:toggleEvent -and $script:toggleEvent.WaitOne(0)) { Toggle-PetVisibility }
     $now = [DateTime]::Now
+    Update-Pomodoro
+    Update-PokeFollowup
     if ($script:window.IsVisible) {
         $script:tick++
         Animate-Pet $script:clock.Elapsed.TotalSeconds
@@ -789,6 +806,8 @@ if ($SelfTest) {
     $window.Left=-10000
     $window.ShowActivated=$false
     $window.Show()
+    . (Join-Path $PSScriptRoot 'Pomodoro.Tests.ps1')
+    Invoke-PomodoroSelfTest
     $script:classEnd=[DateTime]::Now.AddMinutes(20)
     $savedClassEnd=$script:classEnd
     $savedTop=$window.Top
