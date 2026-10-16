@@ -84,11 +84,26 @@ function Update-Pomodoro([datetime]$Now=[DateTime]::UtcNow) {
   Sync-PomodoroTimer
  }
 }
+function Get-PomodoroPokeReply([string]$Fallback,[int]$Roll=-1) {
+ if ($null -eq $script:pomodoro -or $script:pomodoro.phase -ne 'focus' -or $script:pomodoro.paused) { return $Fallback }
+ $chance=switch ($script:mischiefLevel) { 'normal' {60} 'mild' {20} default {0} }
+ if ($Roll -lt 0) { $Roll=$script:rng.Next(100) }
+ if ($Roll -ge $chance) { return $Fallback }
+ $choices=@('넌 빨리 공부해~ 난 여기 있을게.', '나 말고 책 봐~', '나 누를 시간에 한 줄 더 읽어~', '공부는 네가 해. 귀여운 건 내가 할게.', '나 보고 싶어도 쪼끔만 참아~')
+ $activityLine=if ($null -ne $script:roam) { '난 산책할게. 넌 공부하고 있어~' } elseif ($null -ne $script:backTurn) { '난 여기서 쉴게. 넌 공부해~' } else {
+  @('난 바나나 먹을게. 넌 빨리 공부해~','난 폰 봐도 돼. 넌 집중해~','난 쪼끔 잘게… 넌 공부해~','난 한 판 더. 넌 한 줄 더~')[$script:mode]
+ }
+ $choices+=@($activityLine)
+ $available=@($choices | Where-Object { -not $script:recentLines.Contains($_) })
+ if ($available.Count -eq 0) { $available=$choices }
+ return $available[$script:rng.Next($available.Count)]
+}
 function Say-Poke([string]$Message) {
  Update-Pomodoro
  if ($null -eq $script:pomodoro) { Say $Message; return }
  Say (Get-PomodoroRemaining)
- $script:pendingPoke=@{message=$Message;due=[DateTime]::UtcNow.AddSeconds(1.6);mode=$script:mode;roam=$script:roam;back=$script:backTurn}
+ $reply=Get-PomodoroPokeReply $Message
+ $script:pendingPoke=@{message=$reply;pomoTease=($reply -ne $Message);due=[DateTime]::UtcNow.AddSeconds(1.6);mode=$script:mode;roam=$script:roam;back=$script:backTurn}
  $script:bubbleUntil=[DateTime]::Now.AddSeconds(5)
 }
 function Update-PokeFollowup([datetime]$Now=[DateTime]::UtcNow) {
@@ -97,7 +112,7 @@ function Update-PokeFollowup([datetime]$Now=[DateTime]::UtcNow) {
  if (-not $script:window.IsVisible -or $script:dragging -or $script:pressed -or $queued.mode -ne $script:mode) { return }
  if (-not [Object]::ReferenceEquals($queued.roam,$script:roam) -or -not [Object]::ReferenceEquals($queued.back,$script:backTurn)) { return }
  Say $queued.message
- if ($queued.memeFace -and $script:motion -and $script:mischiefLevel -eq 'normal' -and $script:mode -ne 2) { $script:memeFaceEnd=$script:clock.Elapsed.TotalSeconds+1.15 }
+ if (($queued.memeFace -or $queued.pomoTease) -and $script:motion -and $script:mischiefLevel -eq 'normal' -and $script:mode -ne 2) { $script:memeFaceEnd=$script:clock.Elapsed.TotalSeconds+1.15 }
  $script:bubbleUntil=[DateTime]::Now.AddSeconds(3)
 }
 function New-PomodoroSettingsDialog {

@@ -44,6 +44,15 @@
  Set-Pose 1 -Immediate
  Start-Pomodoro 25 5 4
  $currentMode=$script:mode
+ Set-MischiefLevel 'normal' -NoSave
+ if ((Get-PomodoroPokeReply '평소 대사' 0) -eq '평소 대사') { throw 'Active focus must support playful study nudges' }
+ $script:pomodoro.phase='rest'
+ if ((Get-PomodoroPokeReply '평소 대사' 0) -ne '평소 대사') { throw 'Breaks must not nag the user to study' }
+ $script:pomodoro.phase='focus'; $script:pomodoro.paused=$true
+ if ((Get-PomodoroPokeReply '평소 대사' 0) -ne '평소 대사') { throw 'Paused timers must not nag the user to study' }
+ $script:pomodoro.paused=$false
+ Set-MischiefLevel 'off' -NoSave
+ if ((Get-PomodoroPokeReply '평소 대사' 0) -ne '평소 대사') { throw 'Mischief off must disable study teasing' }
  React-ToPoke 4000
  if ($words.Text -notlike '집중해. 25분*' -or $null -eq $script:pendingPoke) { throw 'Click must show remaining time before the ordinary dialogue' }
  $original=$script:pendingPoke.message; $due=$script:pendingPoke.due
