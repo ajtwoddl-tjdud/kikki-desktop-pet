@@ -44,7 +44,7 @@ function Start-PostureTransition([int]$from,[int]$to,[double]$t,$previous) {
  $route=@(Get-PostureRoute $from $to)
  if ($route.Count -eq 0) { return }
  $script:poseTransition=@{start=$t;route=$route;previous=$previous;target=$script:sprites[$to];duration=$route.Count*0.22+0.3}
- $script:quietUntil=$t+$script:poseTransition.duration+30
+ $script:quietUntil=[Math]::Max($script:quietUntil,$t+$script:poseTransition.duration+3)
 }
 function Render-PostureTransition([double]$t) {
  if ($null -eq $script:poseTransition) { return }

@@ -12,6 +12,8 @@ $script:hiddenAt=$null
 $script:pendingClassEnd=$false
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 $script:rng = New-Object Random
+. (Join-Path $PSScriptRoot 'Mischief.ps1')
+if ($SelfTest) { Set-MischiefLevel 'off' -NoSave } else { Read-MischiefSettings }
 $script:mode = 0
 $script:auto = $true
 $script:nextChange = [DateTime]::Now.AddSeconds(22)
@@ -28,10 +30,10 @@ $script:attentionEnd = 0.0
 $script:pressed = $false
 $script:dragging = $false
 $script:dropStart = $null
-$script:nextDrop = 20.0
+$script:nextDrop = $script:rng.Next(120,241)
 $script:dropSpoke = $false
 $script:expressionEnd = 0.0
-$script:nextExpression = 7.0
+$script:nextExpression = $script:rng.Next(120,241)
 $script:lookX = 0.0
 $script:lookY = 0.0
 $script:lastHover = -10.0
@@ -39,7 +41,7 @@ $script:lines = @(
     @('야르렁 바나나', '냠. 이건 내가 잘 먹지.', '이거 먹고 쪼끔 쉴래.', '천천히 먹는 중이야.', '바나나는 내가 맡을게.', '입에 있는 거부터 먹고.', '야르. 간식 좋다.', '쪼끔씩 먹어야 오래 먹지.'),
     @('누워서 폰 보는 게 젤 편해.', '이것만 보고 쉴게. 아마도.', '야르. 이 자세 좋다.', '나 폰 좀 보고 있을게.', '같이 볼래? 옆으로 와.', '누워 있으니까 일어나기 싫네.', '쪼끔만 보고 잘래.', '나 여기서 느긋하게 볼게.'),
     @('야르 누워야지.', '쪼끔만 누워 있을게.', '여기서 눈 좀 붙일래.', '나 먼저 잘게. 근처에 있어.', '하암… 졸리다.', '편하게 누워서 잘래.', '언제 일어날지 감도 안 옴.', '쪼끔 자고 다시 놀자.'),
-    @('노는 게 젤 좋아.', '나 한 판 하고 있을게.', '이번 판은 쪼끔 집중할게.', '잘하면 티~원 한 번 해줘.', '이 판 지면 줴줴이야~', '아직 안 끝났어. 쪼끔만.', '손 쪼끄매도 열심히 누르는 중.', '응원해 주면 더 잘할지도.')
+    @('노는 게 젤 좋아.', '나 한 판 하고 있을게.', '이번 판은 쪼끔 집중할게.', '잘하면 박수 한 번 해줘.', '이번 판은 이기고 싶다.', '아직 안 끝났어. 쪼끔만.', '손 쪼끄매도 열심히 누르는 중.', '응원해 주면 더 잘할지도.')
 )
 $script:extraLines = @{
     hello = @('야르. 끼끼 왔어.', '너 여기 있었네. 나도 있을래.', '여기 쪼끔 자리 빌릴게.', '불러줘서 아자스~', '나도 옆에 있을게.', '오늘도 여기서 같이 있자.')
@@ -50,6 +52,10 @@ $script:extraLines = @{
     classStart = @('잘 듣고 와. 난 여기 있을게.', '끝나면 불러줘.', '수업 듣는 동안 옆에 있을게.', '끝나면 같이 쉬자.', '나 여기서 기다릴게.', '가끔 나 봐도 돼. 나 귀엽잖아.')
     classEnd = @('시간 다 됐다. 고생했어.', '야르. 이제 쪼끔 쉬자.', '수고했어. 나 여기 있었지.', '끝날 때 됐네. 기지개 좀 켜.', '고생했으니까 잠깐 쉬어.', '나랑 쪼끔 쉬었다 하자.')
     phoneDrop = @('못 본 척 해줘~~', '방금 거 못 봤지? 헤헤.', '아무 일도 없었음… 그런 걸로 해줘.', '쪼끔 민망하네… 못 본 척.', '쉿. 방금 건 비밀이야.', '눈 잠깐 감아봐. 나 폰 좀 줍게.', '안 봤다고 해주라~~', '내가 주울게. 너는 못 본 척해줘.')
+    gameLoss = @('한 판 끝! 이제 쪼끔 쉬자.', '한 판 끝났다. 손 좀 쉬어야지.')
+    gameCheer = @('좋아. 이번 판은 집중 중이야.', '오. 방금 쪼끔 잘했지.')
+    walkPoke = @('왜? 뭐? 산책하는 끼끼 처음 봐?')
+    backPoke = @('왜, 뭐?')
     playful = @('히히. 나 봤어?', '나 좀 귀엽지.', '너 보고 한 거야. 헤헤.', '눈 마주쳤네.')
     poke = @('응? 나 불렀어?', '왜 톡 쳐…', '왜? 뭐?', '너 보고 있어. 말해 봐.', '나 보고 싶었어? 그럴 수 있지.', '응. 나 여기 있어.')
     eatPoke = @('왜? 나 먹고 있잖아.', '입에 있는 거 쪼끔만 먹고.', '바나나 먹는 끼끼 처음 봐?', '응? 먹으면서 듣고 있어.', '나 한 입만 먹고 봐줄게.', '왜 톡 쳐. 나 씹는 중이야.')
@@ -64,8 +70,17 @@ function Say-Random([string]$pool = 'pose', [switch]$Poke) {
     else { $choices = $script:extraLines[$pool] }
     $available = @($choices | Where-Object { -not $script:recentLines.Contains($_) })
     if ($available.Count -eq 0) { $available = @($choices | Where-Object { $_ -ne $script:words.Text }) }
-    $message=$available[$script:rng.Next($available.Count)]
-    if ($Poke) { Say-Poke $message } else { Say $message }
+    if ($available.Count -eq 0) { $available = @($choices) }
+    $context=if ($pool -eq 'pose' -and $script:mode -eq 3) {'gameStart'} else {$pool}
+    $t=$script:clock.Elapsed.TotalSeconds
+    $line=Get-MischiefLine $context ($available[$script:rng.Next($available.Count)]) $t ($script:rng.Next(100)) ($script:rng.Next(10000))
+    $script:memeFaceEnd=0
+    if ($line.isMeme -and $script:mischiefLevel -eq 'normal' -and $script:motion -and $script:mode -ne 2 -and $context -in @('eatPoke','phonePoke','gamePoke','playful','gameCheer')) { $script:memeFaceEnd=$t+1.15 }
+    if ($Poke) {
+        $memeFace=($script:memeFaceEnd -gt $t)
+        Say-Poke $line.text
+        if ($null -ne $script:pendingPoke) { $script:pendingPoke.memeFace=$memeFace; $script:memeFaceEnd=0 }
+    } else { Say $line.text }
 }
 [xml]$xaml = @'
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="232" Height="270" WindowStyle="None" AllowsTransparency="True" Background="Transparent" Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize" Title="끼끼" UseLayoutRounding="True">
@@ -163,7 +178,7 @@ function React-ToPoke([double]$t) {
         if ($null -eq $script:roam.pausedAt) { $script:roam.pausedAt=$t }
         $script:roam.pauseUntil=$t+1.0
         $script:attentionStart=$t; $script:attentionEnd=$t+1.0
-        Say-Poke '왜? 뭐? 산책하는 끼끼 처음 봐?'
+        Say-Random 'walkPoke' -Poke
         if ($null -eq $script:pendingPoke) { $script:bubbleUntil=[DateTime]::Now.AddSeconds(1.0) }
         return
     }
@@ -171,19 +186,19 @@ function React-ToPoke([double]$t) {
         $script:backTurn.peek=$t
         $script:backTurn.until=[Math]::Max($script:backTurn.until,$t+5)
         $script:attentionStart=$t; $script:attentionEnd=$t+2.6
-        Say-Poke '왜, 뭐?'
+        Say-Random 'backPoke' -Poke
         $script:bubbleUntil=[DateTime]::Now.AddSeconds(3)
         return
     }
     $script:sulkEnd=0
     Stop-Rest $t
-    Stop-Roam $t 240
+    if ($null -ne $script:roam) { Stop-Roam $t }
     $script:attentionStart=$t
     $script:attentionEnd=$t+2.3
     $script:expressionEnd=0
-    $script:nextExpression=$t+$script:rng.Next(180,421)
+    $script:nextExpression=$t+$script:rng.Next(120,241)
     $script:dropStart=$null
-    $script:nextDrop=$t+$script:rng.Next(480,1201)
+    $script:nextDrop=$t+$script:rng.Next(120,241)
     $script:fallingPhone.Visibility='Hidden'
     if ($script:nextChange -lt [DateTime]::Now.AddSeconds(4)) { $script:nextChange=[DateTime]::Now.AddSeconds(4) }
     Say-Random (@('eatPoke','phonePoke','sleepPoke','gamePoke')[$script:mode]) -Poke
@@ -194,8 +209,8 @@ function Play-Expression([double]$t) {
     if ($null -ne $script:backTurn) { return }
     if ($script:mode -eq 2 -or $null -ne $script:dropStart -or $null -ne $script:roam -or $null -ne $script:rest -or $t -lt $script:attentionEnd) { return }
     $script:expressionEnd=$t+1.15
-    $script:quietUntil=$t+45
-    $script:nextExpression=$t+$script:rng.Next(180,421)
+    $script:quietUntil=$t+1.15+(Get-ActivitySeconds $script:mode)
+    $script:nextExpression=$t+$script:rng.Next(120,241)
 }
 $dropBitmap = New-Object Windows.Media.Imaging.BitmapImage
 $dropBitmap.BeginInit()
@@ -221,7 +236,7 @@ for ($i=0; $i -lt 4; $i++) {
 $script:fallingPhone.Source=$script:dropSprites[1]
 function Start-PhoneDrop([double]$t) {
     Stop-Rest $t
-    $script:quietUntil=$t+90
+    $script:quietUntil=$t+5.6+(Get-ActivitySeconds $script:mode)
     $script:pickupStage=-1
     $script:dropStart=$t
     $script:dropSpoke=$false
@@ -267,11 +282,14 @@ function Animate-Pet([double]$t) {
     }
     if ($closed -and $script:mode -ne 2) { $script:pet.Source=$script:blinkSprites[$script:mode] }
     else { $script:pet.Source=$script:sprites[$script:mode] }
-    if ($t -ge $script:quietUntil -and $t+60 -lt $script:nextRest -and $t -ge $script:nextExpression -and $script:mode -ne 2 -and $null -eq $script:dropStart -and -not $script:dragging) { Play-Expression $t }
+    if ((Get-DueDetail $t) -eq 'expression') {
+        Play-Expression $t
+        if ($script:mode -eq 3) { Say-Random 'gameCheer' } else { Say-Random 'playful' }
+    }
     if ($t -lt $script:expressionEnd -and $script:mode -ne 2) { $script:pet.Source=$script:playfulSprites[$script:mode] }
     $script:fallingPhone.Visibility='Hidden'
     if ($script:mode -eq 1 -and $script:motion -and -not $script:dragging -and -not $attentive -and $null -eq $script:roam -and $null -eq $script:rest -and $null -eq $script:backTurn) {
-        if ($null -eq $script:dropStart -and $t -ge $script:quietUntil -and $t -ge $script:nextDrop) { Start-PhoneDrop $t }
+        if ($null -eq $script:dropStart -and (Get-DueDetail $t) -eq 'drop') { Start-PhoneDrop $t }
         if ($null -ne $script:dropStart) {
             $dt=$t-$script:dropStart
             $sx=1; $sy=1; $angle=0; $y=0
@@ -299,12 +317,12 @@ function Animate-Pet([double]$t) {
                 Update-PhonePickup $dt
             } else {
                 $script:dropStart=$null
-                $script:nextDrop=$t+$script:rng.Next(600,1501)
+                $script:nextDrop=$t+$script:rng.Next(120,241)
             }
         }
     } elseif ($null -ne $script:dropStart) {
         $script:dropStart=$null
-        $script:nextDrop=$t+$script:rng.Next(480,1201)
+        $script:nextDrop=$t+$script:rng.Next(120,241)
     }
     # Small damped perspective shifts make the pet respond to nearby movement.
     $targetX=0.0; $targetY=0.0
@@ -330,7 +348,8 @@ function Animate-Pet([double]$t) {
         $skew=-0.4*$script:lookX
     }
     if ($attentive) {
-        $script:pet.Source=$script:lookSprites[$script:mode]
+        if ($script:motion -and $script:mischiefLevel -eq 'normal' -and $t -lt $script:memeFaceEnd) { $script:pet.Source=$script:playfulSprites[$script:mode] }
+        else { $script:pet.Source=$script:lookSprites[$script:mode] }
         $still=[Math]::Min(1,[Math]::Min(($t-$script:attentionStart)/0.16,($script:attentionEnd-$t)/0.25))
         $sx=1+($sx-1)*(1-$still); $sy=1+($sy-1)*(1-$still)
         $angle*=1-$still; $x*=1-$still; $y*=1-$still; $skew*=1-$still
@@ -353,6 +372,8 @@ function Animate-Pet([double]$t) {
     } else { $script:sleepMark.Visibility='Hidden' }
 }
 $script:bubbleHeadCache=@{}
+$script:lastBubbleSource=$null
+$script:lastBubbleMessage=$null
 Add-Type @'
 public static class KikkiBubbleSilhouette {
  public static int Top(byte[] pixels,int width,int height) {
@@ -378,6 +399,7 @@ public static class KikkiBubbleSilhouette {
 function Update-BubblePosition {
     if ($script:bubble.Visibility -ne 'Visible' -or $null -eq $script:pet.Source) { return }
     $source=$script:pet.Source
+    if ([Object]::ReferenceEquals($source,$script:lastBubbleSource) -and $script:words.Text -eq $script:lastBubbleMessage) { return }
     if (-not $script:bubbleHeadCache.ContainsKey($source)) {
         # Measure the visible silhouette once, including transparent atlas margins.
         $fit=[Math]::Min(220.0/$source.Width,195.0/$source.Height)
@@ -394,6 +416,8 @@ function Update-BubblePosition {
     $script:bubble.Measure([Windows.Size]::new(212,[double]::PositiveInfinity))
     $top=[Math]::Max(4,$script:bubbleHeadCache[$source]-6-$script:bubble.DesiredSize.Height)
     [Windows.Controls.Canvas]::SetTop($script:bubble,$top)
+    $script:lastBubbleSource=$source
+    $script:lastBubbleMessage=$script:words.Text
 }
 function Say([string]$message) {
     $script:pendingPoke=$null
@@ -412,6 +436,7 @@ function Say([string]$message) {
 }
 function Set-Pose([int]$index, [switch]$Immediate) {
     $previousMode=$script:mode; $previousSource=$script:pet.Source
+    if ($previousMode -ne $index) { $script:previousActivity=$previousMode }
     $script:poseTransition=$null
     Stop-BackTurn $script:clock.Elapsed.TotalSeconds
     $script:sulkEnd=0
@@ -419,10 +444,8 @@ function Set-Pose([int]$index, [switch]$Immediate) {
     if ($null -ne $script:roam) { Stop-Roam $script:clock.Elapsed.TotalSeconds }
     $script:mode = $index
     $script:attentionEnd=0
-    $script:expressionEnd=0
-    $script:nextExpression=$script:clock.Elapsed.TotalSeconds+$script:rng.Next(180,421)
+    $script:expressionEnd=0; $script:memeFaceEnd=0
     $script:dropStart=$null
-    $script:nextDrop=$script:clock.Elapsed.TotalSeconds+$script:rng.Next(480,1201)
     $script:fallingPhone.Visibility='Hidden'
     $script:pet.Source = $script:sprites[$index]
     $script:nextChange = [DateTime]::Now.AddSeconds((Get-ActivitySeconds $index))
@@ -433,20 +456,21 @@ function Keep-OnScreen {
     $script:window.Left = [Math]::Max($area.Left, [Math]::Min($script:window.Left, $area.Right-$script:window.Width))
     $script:window.Top = [Math]::Max($area.Top, [Math]::Min($script:window.Top, $area.Bottom-$script:window.Height))
 }
+. (Join-Path $PSScriptRoot 'Behavior.ps1')
 . (Join-Path $PSScriptRoot 'Roaming.ps1')
 . (Join-Path $PSScriptRoot 'Resting.ps1')
 . (Join-Path $PSScriptRoot 'Pickup.ps1')
 . (Join-Path $PSScriptRoot 'Lifting.ps1')
 . (Join-Path $PSScriptRoot 'BackTurn.ps1')
-. (Join-Path $PSScriptRoot 'Behavior.ps1')
 . (Join-Path $PSScriptRoot 'Transitions.ps1')
+. (Join-Path $PSScriptRoot 'Runtime.ps1')
 . (Join-Path $PSScriptRoot 'Pomodoro.ps1')
 Set-Pose 1 -Immediate
 $area = [System.Windows.SystemParameters]::WorkArea
 $window.Left = $area.Right - $window.Width - 24
 $window.Top = $area.Bottom - $window.Height - 12
 $script:homeX=$window.Left
-$script:nextRoam=$script:clock.Elapsed.TotalSeconds+$script:rng.Next(300,601)
+$script:nextRoam=$script:clock.Elapsed.TotalSeconds+$script:rng.Next(120,241)
 $pet.Add_MouseEnter({
     $t=$script:clock.Elapsed.TotalSeconds
     if ($t-$script:lastHover -gt 90 -and $t -ge $script:nextExpression -and $script:rng.Next(4) -eq 0) { Play-Expression $t; $script:lastHover=$t }
@@ -489,6 +513,7 @@ function Add-Menu([string]$label, [scriptblock]$action) {
     $item = New-Object Windows.Controls.MenuItem
     $item.Header = $label
     $item.Add_Click($action)
+    $item.Add_Click({ Sync-PetTimers })
     [void]$menu.Items.Add($item)
 }
 Add-Menu '알아서 놀기' { $script:auto=$true; if ($script:mode -eq 2) { Say '응… 나 쪼끔만 더 잘래.' } else { Say-Random 'auto' } }
@@ -503,11 +528,33 @@ Add-Menu '등 돌리고 쉬기' { Start-BackTurn $script:clock.Elapsed.TotalSeco
 Add-Menu '윙크 한 번 해봐' { Set-Pose 0 -Immediate; Play-Expression $script:clock.Elapsed.TotalSeconds; Say '윙크. 너한테 해준 거야. 헤헤.' }
 Add-Menu '메롱 해봐' { Set-Pose 3 -Immediate; Play-Expression $script:clock.Elapsed.TotalSeconds; Say '메롱. 쪼끔 킹받지? 헤헤.' }
 Add-Menu '움직임 줄이기 / 다시 신나게' { $script:motion = -not $script:motion; Say '이 정도 텐션 어때.' }
+$script:mischiefMenu=New-Object Windows.Controls.MenuItem
+$script:mischiefMenu.Header='킹받기 조절'
+foreach ($entry in @(@('normal','기본'),@('mild','순한맛'),@('off','끄기'))) {
+    $item=New-Object Windows.Controls.MenuItem
+    $item.Header=$entry[1]; $item.Tag=$entry[0]; $item.IsCheckable=$true
+    $item.IsChecked=($script:mischiefLevel -eq $entry[0])
+    $item.Add_Click({
+        param($sender,$eventArgs)
+        $message=switch ([string]$sender.Tag) {
+            'normal' {'알겠어. 쪼끔 킹받게 해볼게.'}
+            'mild' {'응. 가끔만 장난칠게.'}
+            'off' {'알았어. 순하게 옆에 있을게.'}
+        }
+        try { Set-MischiefLevel ([string]$sender.Tag) }
+        catch { $message='이번 실행에는 적용했어. 저장은 못 했네.' }
+        foreach ($option in $script:mischiefMenu.Items) { $option.IsChecked=($option.Tag -eq $script:mischiefLevel) }
+        Say $message
+        Sync-PetTimers
+    })
+    [void]$script:mischiefMenu.Items.Add($item)
+}
+[void]$menu.Items.Add($script:mischiefMenu)
 Add-Menu '근처로 산책 가봐' { $script:motion=$true; $script:roamEnabled=$true; Start-Roam $script:clock.Elapsed.TotalSeconds }
 Add-Menu '반대쪽 끝까지 산책 가봐' { $script:motion=$true; $script:roamEnabled=$true; Start-Roam $script:clock.Elapsed.TotalSeconds -Across }
 Add-Menu '자동 산책 켜기 / 끄기' {
     $script:roamEnabled=-not $script:roamEnabled
-    if ($script:roamEnabled) { $script:nextRoam=$script:clock.Elapsed.TotalSeconds+30; Say '편한 자리 좀 찾아볼게.' }
+    if ($script:roamEnabled) { $script:nextRoam=$script:clock.Elapsed.TotalSeconds+(Get-ActivitySeconds $script:mode); Say '편한 자리 좀 찾아볼게.' }
     else { Stop-Roam $script:clock.Elapsed.TotalSeconds; Say '응. 여기서 쉬고 있을게.' }
 }
 [void]$menu.Items.Add((New-Object Windows.Controls.Separator))
@@ -561,11 +608,12 @@ function Toggle-PetVisibility {
         }
         [Console]::WriteLine('VISIBILITY: shown')
     }
+    Complete-ClassTimer
+    Sync-PetTimers
 }
 $script:timer = New-Object Windows.Threading.DispatcherTimer
 $timer.Interval = [TimeSpan]::FromMilliseconds(33)
 $timer.Add_Tick({
-    if ($null -ne $script:toggleEvent -and $script:toggleEvent.WaitOne(0)) { Toggle-PetVisibility }
     $now = [DateTime]::Now
     Update-Pomodoro
     Update-PokeFollowup
@@ -579,18 +627,27 @@ $timer.Add_Tick({
         Render-PetLift $script:clock.Elapsed.TotalSeconds
         Update-BubblePosition
         if ($now -gt $script:bubbleUntil) { $script:bubble.Visibility='Hidden' }
-        if ($script:auto -and -not $script:pressed -and -not $script:dragging -and $script:clock.Elapsed.TotalSeconds -ge $script:sulkEnd -and $null -eq $script:roam -and $null -eq $script:rest -and $null -eq $script:backTurn -and $now -gt $script:nextChange) {
+        if ($script:auto -and -not $script:pressed -and -not $script:dragging -and $script:clock.Elapsed.TotalSeconds -ge $script:sulkEnd -and $null -eq $script:roam -and $null -eq $script:rest -and $null -eq $script:backTurn -and $null -eq $script:poseTransition -and $null -eq $script:dropStart -and $script:clock.Elapsed.TotalSeconds -ge $script:expressionEnd -and $script:clock.Elapsed.TotalSeconds -ge $script:attentionEnd -and $now -gt $script:nextChange) {
             Continue-Life
 
         }
     }
-    if ($null -ne $script:classEnd -and $now -ge $script:classEnd) {
-        $script:classEnd=$null
-        if ($script:window.IsVisible) { Say-Random 'classEnd'; $script:bubbleUntil=$now.AddSeconds(12) }
-        else { $script:pendingClassEnd=$true }
-    }
+    Complete-ClassTimer
+    Sync-PetTimers
 })
-$window.Add_Closed({ $script:timer.Stop() })
+$script:classTimer = New-Object Windows.Threading.DispatcherTimer
+$script:classTimer.Add_Tick({
+    $script:classTimer.Stop()
+    $script:scheduledClassEnd=$null
+    Complete-ClassTimer
+    Sync-PetTimers
+})
+$window.Add_Closed({
+    $script:timer.Stop()
+    $script:classTimer.Stop()
+    $script:pomoTimer.Stop()
+    if ($null -ne $script:visibilityWatcher) { $script:visibilityWatcher.Dispose() }
+})
 if ($SelfTest) {
     for ($i=0; $i -lt 4; $i++) {
         Set-Pose $i
@@ -650,6 +707,9 @@ if ($SelfTest) {
         if ([Object]::ReferenceEquals($pet.Source,$script:lookSprites[$i])) { throw 'Poke should return to activity' }
     }
     Set-Pose 0
+    $savedRoamDeadline=$script:nextRoam; $savedDetailDeadline=$script:nextRest; $savedExpressionDeadline=$script:nextExpression
+    Set-Pose 3
+    if ($script:nextRoam -ne $savedRoamDeadline -or $script:nextRest -ne $savedDetailDeadline -or $script:nextExpression -ne $savedExpressionDeadline) { throw 'Activity changes must not postpone walking or details' }
     Start-Roam 300
     if ($null -eq $script:roam) { throw 'Roam failed to start' }
     $target=$script:roam.toX
@@ -701,7 +761,7 @@ if ($SelfTest) {
         Start-Rest 600
         if ($null -eq $script:rest) { throw 'Rest action missing' }
         $detailDue=$script:nextRest
-        if ($detailDue -lt 720 -or $detailDue -gt 780) { throw 'Small actions must recur within two to three minutes' }
+        if ($detailDue -lt 720 -or $detailDue -gt 840) { throw 'Small actions must recur within two to four minutes' }
         Update-Rest 601.2
         $expectedSource=if ($i -eq 3) { $script:rest.gameSource } else { $script:restSprites[@(5,3,1)[$i]] }
         if (-not [Object]::ReferenceEquals($pet.Source,$expectedSource)) { throw 'Rest pose incorrect' }
@@ -759,7 +819,7 @@ if ($SelfTest) {
     Write-Output 'PASS: back-facing idle, click glance, blink, return, and interruption.'
     Set-Pose 2
     $sleepDeadline=$script:nextChange
-    if (($sleepDeadline-[DateTime]::Now).TotalSeconds -lt 719) { throw 'Sleep must last at least twelve minutes' }
+    if (($sleepDeadline-[DateTime]::Now).TotalSeconds -lt 119) { throw 'Sleep must last at least two minutes' }
     React-ToPoke 1000
     Start-Rest 1003
     Update-Rest 1005
@@ -774,7 +834,7 @@ if ($SelfTest) {
         Continue-Life
         if ($script:mode -eq 0 -or $script:mode -eq 3) { throw 'Sleep must ease into waking rest' }
     }
-    Write-Output 'PASS: long sleep, sleep-preserving touch/repositioning, no sleep wandering, gentle waking transitions.'
+    Write-Output 'PASS: minute-scale sleep, sleep-preserving touch/repositioning, no sleep wandering, gentle waking transitions.'
     $script:pet.Source=$script:liftSprites[3]
     Say '휴. 바닥이 좋긴 하네.'
     Update-BubblePosition
@@ -813,20 +873,27 @@ if ($SelfTest) {
     $savedTop=$window.Top
     Toggle-PetVisibility
     if ($window.IsVisible -or $script:clock.IsRunning) { throw 'Hide must pause visual activity' }
+    if ($script:timer.IsEnabled -or -not $script:classTimer.IsEnabled) { throw 'Hidden pet must stop animation polling and retain the class deadline' }
     Toggle-PetVisibility
     if (-not $window.IsVisible -or -not $script:clock.IsRunning) { throw 'Show must resume visual activity' }
     if ($window.Left -ne -10000 -or $window.Top -ne $savedTop -or $script:classEnd -ne $savedClassEnd) { throw 'Toggle changed position or class timer' }
-    Write-Output 'PASS: hide/show retains position and class timer.'
+    if (-not $script:timer.IsEnabled) { throw 'Show must restart the animation timer' }
+    Write-Output 'PASS: hide/show retains position and class timer; hidden animation polling stops.'
     Write-Output ('PASS: 78 sprites; upward lift/wriggle/release; four-stage hand pickup; rest/eat/phone poses and interruption; aligned eight-frame gait; distance easing; expressions; phone drop; quiet poke; roam/stretch/bounds/settle/cancel/disable; WPF layout; {0} menu entries.' -f $menu.Items.Count)
     $window.Close()
     exit 0
 }
 Say-Random 'hello'
-$timer.Start()
+if ($null -ne $script:toggleEvent) {
+    $context=[Windows.Threading.DispatcherSynchronizationContext]::new($window.Dispatcher)
+    $script:visibilityWatcher=[KikkiEventWatcher]::new($script:toggleEvent,$context,[Action]{ Toggle-PetVisibility })
+}
+$window.Add_Loaded({ Sync-PetTimers })
 $script:app=[Windows.Application]::new()
 $script:app.ShutdownMode=[Windows.ShutdownMode]::OnMainWindowClose
 try { [void]$script:app.Run($window) }
 finally {
+    if ($null -ne $script:visibilityWatcher) { $script:visibilityWatcher.Dispose() }
     if ($null -ne $script:toggleEvent) { $script:toggleEvent.Dispose() }
     if ($null -ne $script:petMutex) { $script:petMutex.ReleaseMutex(); $script:petMutex.Dispose() }
 }

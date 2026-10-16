@@ -2,6 +2,20 @@
 $script:pomoSettings=@{focus=25;rest=5;rounds=4}
 $script:pendingPomoNotice=$null
 $script:pendingPoke=$null
+$script:pomoTimer=New-Object Windows.Threading.DispatcherTimer
+$script:pomoTimer.Add_Tick({
+ $script:pomoTimer.Stop()
+ Update-Pomodoro
+ Sync-PomodoroTimer
+})
+function Sync-PomodoroTimer {
+ $script:pomoTimer.Stop()
+ if ($null -ne $script:pomodoro -and -not $script:pomodoro.paused) {
+  $delay=[Math]::Max(1.0,($script:pomodoro.deadline-[DateTime]::UtcNow).TotalMilliseconds)
+  $script:pomoTimer.Interval=[TimeSpan]::FromMilliseconds($delay)
+  $script:pomoTimer.Start()
+ }
+}
 function Start-Pomodoro([int]$Focus,[int]$Rest,[int]$Rounds,[datetime]$Now=[DateTime]::UtcNow) {
  if ($Focus -lt 1 -or $Focus -gt 240 -or $Rest -lt 1 -or $Rest -gt 120 -or $Rounds -lt 1 -or $Rounds -gt 12) { throw 'Invalid Pomodoro settings' }
  $script:pomoSettings=@{focus=$Focus;rest=$Rest;rounds=$Rounds}
@@ -9,9 +23,12 @@ function Start-Pomodoro([int]$Focus,[int]$Rest,[int]$Rounds,[datetime]$Now=[Date
  $script:classEnd=$null; $script:pendingClassEnd=$false
  $script:pendingPomoNotice=$null
  Say ('집중 {0}분 시작! 끝나면 내가 알려줄게.' -f $Focus)
+ Sync-PomodoroTimer
+ if ($null -ne $script:classTimer) { Sync-PetTimers }
 }
 function Stop-Pomodoro([switch]$Quiet) {
  $script:pomodoro=$null; $script:pendingPomoNotice=$null; $script:pendingPoke=$null
+ Sync-PomodoroTimer
  if (-not $Quiet) { Say '타이머 껐어. 쪼끔 쉬자.' }
 }
 function Get-PomodoroRemaining([datetime]$Now=[DateTime]::UtcNow) {
@@ -19,9 +36,9 @@ function Get-PomodoroRemaining([datetime]$Now=[DateTime]::UtcNow) {
  $p=$script:pomodoro
  $seconds=if ($p.paused) { $p.remaining } else { [Math]::Max(0.0,($p.deadline-$Now).TotalSeconds) }
  $phase=if ($p.phase -eq 'focus') { '집중' } else { '휴식' }
- $prefix=if ($p.paused) { '잠깐 멈춰뒀어. ' } else { '' }
- if ($seconds -le 60) { return ('{0}{1} {2}초 남았어.' -f $prefix,$phase,[int][Math]::Ceiling($seconds)) }
- return ('{0}{1} {2}분 남았어.' -f $prefix,$phase,[int][Math]::Ceiling($seconds/60.0))
+ $prompt=if ($p.paused) { '잠깐 멈춰뒀어. '+$phase+' ' } elseif ($p.phase -eq 'focus') { '집중해. ' } else { '좀 쉬어. ' }
+ if ($seconds -le 60) { return ('{0}{1}초 남았어.' -f $prompt,[int][Math]::Ceiling($seconds)) }
+ return ('{0}{1}분 남았어.' -f $prompt,[int][Math]::Ceiling($seconds/60.0))
 }
 function Toggle-PomodoroPause([datetime]$Now=[DateTime]::UtcNow) {
  if ($null -eq $script:pomodoro) { Say '돌아가는 타이머는 없어. 먼저 시작해 줘.'; return }
@@ -35,6 +52,7 @@ function Toggle-PomodoroPause([datetime]$Now=[DateTime]::UtcNow) {
   $p.remaining=[Math]::Max(0.0,($p.deadline-$Now).TotalSeconds); $p.paused=$true
   Say (Get-PomodoroRemaining $Now)
  }
+ Sync-PomodoroTimer
 }
 function Present-PomodoroNotice {
  if ($null -ne $script:pendingPomoNotice -and $script:window.IsVisible) {
@@ -63,6 +81,7 @@ function Update-Pomodoro([datetime]$Now=[DateTime]::UtcNow) {
  if ($null -ne $notice) {
   $script:pendingPomoNotice=$notice
   Present-PomodoroNotice
+  Sync-PomodoroTimer
  }
 }
 function Say-Poke([string]$Message) {
@@ -78,6 +97,7 @@ function Update-PokeFollowup([datetime]$Now=[DateTime]::UtcNow) {
  if (-not $script:window.IsVisible -or $script:dragging -or $script:pressed -or $queued.mode -ne $script:mode) { return }
  if (-not [Object]::ReferenceEquals($queued.roam,$script:roam) -or -not [Object]::ReferenceEquals($queued.back,$script:backTurn)) { return }
  Say $queued.message
+ if ($queued.memeFace -and $script:motion -and $script:mischiefLevel -eq 'normal' -and $script:mode -ne 2) { $script:memeFaceEnd=$script:clock.Elapsed.TotalSeconds+1.15 }
  $script:bubbleUntil=[DateTime]::Now.AddSeconds(3)
 }
 function New-PomodoroSettingsDialog {

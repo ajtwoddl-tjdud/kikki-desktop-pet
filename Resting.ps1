@@ -1,5 +1,5 @@
 ﻿$script:rest=$null
-$script:nextRest=110.0
+$script:nextRest=$script:rng.Next(120,241)
 Add-Type @'
 public static class DoongiRestBounds {
  public static int[] Measure(byte[] p,int w,int h,int stride) {
@@ -50,8 +50,9 @@ for ($i=0;$i -lt 6;$i++) {
 $script:restBlend=$window.FindName('RestBlend')
 $script:restBlend.RenderTransform=$script:pet.RenderTransform
 function Stop-Rest([double]$t, [switch]$Completed) {
+ $interrupted=$null -ne $script:rest
  $script:rest=$null
- if (-not $Completed) { $script:nextRest=$t+$script:rng.Next(120,181) }
+ if ($interrupted -and -not $Completed) { $script:nextRest=$t+$script:rng.Next(120,241) }
  $script:restBlend.Visibility='Hidden'
  $script:pet.Opacity=1
 }
@@ -62,19 +63,17 @@ function Start-Rest([double]$t) {
  $first=@(4,2,0,0)[$script:mode]; $hold=@(4.0,25.0,90.0,4.0)[$script:mode]
  $script:rest=@{start=$t;mode=$script:mode;first=$first;hold=$hold;stage=-1;lastSource=$script:pet.Source;previous=$script:pet.Source;changed=$t}
  # Count from the last small action, not after its long-held pose finishes.
- $script:nextRest=$t+$script:rng.Next(120,181)
+ $script:nextRest=$t+$script:rng.Next(120,241)
  if ($script:mode -eq 3) {
   $script:rest.gameSource=if ($script:rng.Next(3) -eq 0) { $script:playfulSprites[3] } else { $script:lookSprites[3] }
  }
  $script:expressionEnd=0
- $script:nextExpression=[Math]::Max($script:nextExpression,$t+$hold+70)
- $script:nextDrop=[Math]::Max($script:nextDrop,$t+$hold+70)
- $script:quietUntil=$t+$hold+70
+ $script:quietUntil=$t+$hold+(Get-ActivitySeconds $script:mode)
  if ($script:nextChange -lt [DateTime]::Now.AddSeconds($hold+2)) { $script:nextChange=[DateTime]::Now.AddSeconds($hold+2) }
 }
 function Update-Rest([double]$t) {
  if ($null -eq $script:rest) {
-  if ($t -ge $script:quietUntil -and $t -ge $script:nextRest -and -not $SelfTest -and -not $script:pet.ContextMenu.IsOpen) { Start-Rest $t }
+  if ((Get-DueDetail $t) -eq 'rest' -and -not $SelfTest -and -not $script:pet.ContextMenu.IsOpen) { Start-Rest $t }
   if ($null -eq $script:rest) { return }
  }
  if (-not $script:motion -or $script:rest.mode -ne $script:mode -or $null -ne $script:roam -or $null -ne $script:dropStart -or $script:pressed -or $script:dragging -or $t -lt $script:attentionEnd) { Stop-Rest $t; return }

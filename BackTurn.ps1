@@ -1,5 +1,5 @@
 ﻿$script:backTurn=$null
-$script:nextBack=420.0
+$script:nextBack=$script:rng.Next(120,241)
 $backBitmap=[Windows.Media.Imaging.BitmapImage]::new()
 $backBitmap.BeginInit()
 $backBitmap.CacheOption=[Windows.Media.Imaging.BitmapCacheOption]::OnLoad
@@ -16,20 +16,20 @@ for ($i=0;$i -lt 4;$i++) {
 function Stop-BackTurn([double]$t) {
  if ($null -eq $script:backTurn) { return }
  $script:backTurn=$null
- $script:nextBack=$t+$script:rng.Next(420,901)
+ $script:nextBack=$t+$script:rng.Next(120,241)
 }
 function Start-BackTurn([double]$t) {
  if ($null -ne $script:poseTransition) { return }
  if ($script:pressed -or $script:dragging -or $t -lt $script:sulkEnd -or $t -lt $script:attentionEnd) { return }
- Stop-Rest $t; Stop-Roam $t 45
+ Stop-Rest $t; if ($null -ne $script:roam) { Stop-Roam $t }
  $script:dropStart=$null; $script:expressionEnd=0
  $script:backTurn=@{until=$t+$script:rng.Next(35,76);peek=-10.0}
  $script:fallingPhone.Visibility='Hidden'
-$script:quietUntil=$t+150
+$script:quietUntil=$script:backTurn.until+(Get-ActivitySeconds $script:mode)
 }
 function Update-BackTurn([double]$t) {
  if ($null -eq $script:backTurn) {
-  if ($script:mode -ne 2 -and $t -ge $script:quietUntil -and -not $SelfTest -and $script:auto -and $script:motion -and $t -ge $script:nextBack -and $null -eq $script:rest -and $null -eq $script:roam -and $null -eq $script:dropStart -and -not $script:pet.ContextMenu.IsOpen) { Start-BackTurn $t }
+  if ((Get-DueDetail $t) -eq 'back' -and -not $SelfTest -and $script:auto -and $script:motion -and $t -ge $script:nextBack -and $null -eq $script:rest -and $null -eq $script:roam -and $null -eq $script:dropStart -and -not $script:pet.ContextMenu.IsOpen) { Start-BackTurn $t }
   if ($null -eq $script:backTurn) { return }
  }
  if ($script:dragging -or $t -ge $script:backTurn.until) { Stop-BackTurn $t; return }

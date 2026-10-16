@@ -17,6 +17,7 @@
  Toggle-PomodoroPause $now.AddSeconds(20)
  Update-Pomodoro $now.AddHours(1)
  if (-not $script:pomodoro.paused -or $script:pomodoro.remaining -ne 40) { throw 'Pause must freeze the remaining duration' }
+ if ($script:pomoTimer.IsEnabled) { throw 'Paused Pomodoro must stop its deadline timer' }
  Toggle-PomodoroPause $now.AddSeconds(100)
  if ($script:pomodoro.deadline -ne $now.AddSeconds(140) -or $script:pomodoro.paused) { throw 'Resume must preserve the exact remaining duration' }
  Start-Pomodoro 1 1 2 $now
@@ -29,11 +30,22 @@
  Start-Pomodoro 1 1 2 $now
  Update-Pomodoro $now.AddHours(2)
  if ($null -ne $script:pomodoro) { throw 'Long sleep must catch up without restarting expired phases' }
+ Start-Pomodoro 1 1 2
+ $script:pomodoro.deadline=[DateTime]::UtcNow.AddMilliseconds(25)
+ Sync-PomodoroTimer
+ Toggle-PetVisibility
+ $script:pomoTestFrame=[Windows.Threading.DispatcherFrame]::new()
+ $wakeTestTimer=[Windows.Threading.DispatcherTimer]::new()
+ $wakeTestTimer.Interval=[TimeSpan]::FromMilliseconds(150)
+ $wakeTestTimer.Add_Tick({ $script:pomoTestFrame.Continue=$false })
+ try { $wakeTestTimer.Start(); [Windows.Threading.Dispatcher]::PushFrame($script:pomoTestFrame) } finally { $wakeTestTimer.Stop() }
+ if ($script:pomodoro.phase -ne 'rest' -or $script:timer.IsEnabled -or -not $script:pomoTimer.IsEnabled) { throw 'Hidden Pomodoro must advance from its own deadline event without waking animation polling' }
+ Toggle-PetVisibility
  Set-Pose 1 -Immediate
  Start-Pomodoro 25 5 4
  $currentMode=$script:mode
  React-ToPoke 4000
- if ($words.Text -notlike '집중 25분*' -or $null -eq $script:pendingPoke) { throw 'Click must show remaining time before the ordinary dialogue' }
+ if ($words.Text -notlike '집중해. 25분*' -or $null -eq $script:pendingPoke) { throw 'Click must show remaining time before the ordinary dialogue' }
  $original=$script:pendingPoke.message; $due=$script:pendingPoke.due
  Update-PokeFollowup $due.AddMilliseconds(-1)
  if ($words.Text -eq $original) { throw 'Ordinary dialogue appeared before the timer message could be read' }
