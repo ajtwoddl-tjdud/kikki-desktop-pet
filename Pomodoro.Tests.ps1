@@ -72,7 +72,7 @@
  Update-Roam 5003.01
  if ($null -ne $script:roam.pausedAt -or $words.Text -notlike '집중*') { throw 'Walking must resume after one second while the timer message remains readable' }
  Update-PokeFollowup $script:pendingPoke.due
- if ($words.Text -ne '왜? 뭐? 산책하는 끼끼 처음 봐?') { throw 'Walking dialogue must follow the timer without another stop' }
+ if ($script:extraLines.walkPoke -notcontains $words.Text) { throw 'Walking dialogue must follow the timer without another stop' }
  Stop-Roam 5004
  Stop-Pomodoro -Quiet
  Say-Poke '응? 나 불렀어?'

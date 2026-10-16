@@ -149,7 +149,7 @@ function Update-Roam([double]$t) {
         $script:roam.pausedAt=$null
         $script:roam.pauseUntil=0.0
         $script:attentionEnd=0
-        if ($script:words.Text -eq '왜? 뭐? 산책하는 끼끼 처음 봐?') { $script:bubble.Visibility='Hidden' }
+        if ($null -ne $script:roam.replyText -and $script:words.Text -eq $script:roam.replyText) { $script:bubble.Visibility='Hidden' }
     }
     $elapsed=$t-$script:roam.start
     $walkTime=$elapsed-1.1

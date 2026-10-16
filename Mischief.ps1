@@ -15,7 +15,7 @@ function Get-MischiefLine([string]$context,[string]$fallback,[double]$time,[int]
         return [pscustomobject]@{text=$fallback;isMeme=$false}
     }
     $choices=@($property.Value)
-    $available=@($choices | Where-Object { $_ -ne $script:previousMemeLine })
+    $available=@($choices | Where-Object { $_ -ne $script:previousMemeLine -and ($null -eq $script:recentLines -or -not $script:recentLines.Contains($_)) })
     if ($available.Count -eq 0) { $available=$choices }
     $text=$available[$selection % $available.Count]
     $script:previousMemeLine=$text

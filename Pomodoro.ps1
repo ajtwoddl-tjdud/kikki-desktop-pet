@@ -89,11 +89,23 @@ function Get-PomodoroPokeReply([string]$Fallback,[int]$Roll=-1) {
  $chance=switch ($script:mischiefLevel) { 'normal' {60} 'mild' {20} default {0} }
  if ($Roll -lt 0) { $Roll=$script:rng.Next(100) }
  if ($Roll -ge $chance) { return $Fallback }
- $choices=@('넌 빨리 공부해~ 난 여기 있을게.', '나 말고 책 봐~', '나 누를 시간에 한 줄 더 읽어~', '공부는 네가 해. 귀여운 건 내가 할게.', '나 보고 싶어도 쪼끔만 참아~')
- $activityLine=if ($null -ne $script:roam) { '난 산책할게. 넌 공부하고 있어~' } elseif ($null -ne $script:backTurn) { '난 여기서 쉴게. 넌 공부해~' } else {
-  @('난 바나나 먹을게. 넌 빨리 공부해~','난 폰 봐도 돼. 넌 집중해~','난 쪼끔 잘게… 넌 공부해~','난 한 판 더. 넌 한 줄 더~')[$script:mode]
+ $choices=@('넌 빨리 공부해~ 난 여기 있을게.', '나 누를 시간에 한 줄 더 읽어~', '공부는 네가 해. 귀여운 건 내가 할게.', '나 보고 싶어도 쪼끔만 참아~', '나 쳐다보는 건 쉬는 시간에 해~', '나한테 딴짓하러 왔지? 쪼끔만 보고 돌아가~')
+ $activityLines=if ($null -ne $script:roam) {
+  @('난 산책할게. 넌 공부하고 있어~','내가 걷는 동안 넌 쪼끔 더 해~','끼끼는 산책 중. 너는 집중 중이잖아~','나 따라오지 말고 할 거 마저 해~','난 다리 쓰고, 넌 머리 써~')
+ } elseif ($null -ne $script:backTurn) {
+  @('난 여기서 쉴게. 넌 공부해~','고개 돌려줬다. 이제 공부하러 가~','나 안 갔어. 집중 끝날 때까지 여기 있을게.','내 뒤통수 말고 할 거 봐~','등 돌려도 네가 딴짓하는 건 알지~')
+ } else {
+  switch ($script:mode) {
+   0 { @('난 바나나 먹을게. 넌 빨리 공부해~','나는 한 입 더. 너는 한 줄 더~','내 간식 시간이지, 네 쉬는 시간은 아직 아니야~','나 씹는 동안 쪼끔만 더 해~','난 바나나 안 놓칠게. 넌 집중 놓치지 마~') }
+   1 { @('난 폰 봐도 돼. 넌 집중해~','내 폰 같이 보러 온 거야? 아직 쉬는 시간 아니지~','나만 누워 있는 거야. 넌 공부 마저 해~','너까지 폰 보러 가면 안 되는데~','난 누워서 기다릴게. 끝나면 불러~') }
+   2 { @('난 쪼끔 잘게… 넌 공부해~','나 깨울 시간에 쪼끔만 더 해…','난 자도 돼… 넌 아직 집중 시간이잖아~','끝나면 깨워… 지금은 공부해~','내가 눈 감고 있어도 딴짓하면 안 된다…') }
+   3 { @('난 한 판 더. 넌 한 줄 더~','내 게임 구경은 쉬는 시간에 해~','나는 컨트롤러 보고, 너는 할 거 보고~','내가 노는 건 대신 놀아주는 거잖아~','난 노는 데 집중할게. 넌 공부에 집중해~') }
+  }
  }
- $choices+=@($activityLine)
+ $choices+=@($activityLines)
+ $remaining=($script:pomodoro.deadline-[DateTime]::UtcNow).TotalSeconds
+ if ($remaining -le 60) { $choices+=@('이제 쪼끔 남았어. 마저 하고 같이 쉬자~','곧 끝나는데 나 누르고 있네~ 쪼끔만 더 해.') }
+ elseif ($script:pomodoro.focusSeconds-$remaining -lt 60) { $choices+=@('방금 시작했잖아. 벌써 끼끼 보러 왔어?','시작한 지 얼마 안 됐는데~ 쪼끔만 집중해.') }
  $available=@($choices | Where-Object { -not $script:recentLines.Contains($_) })
  if ($available.Count -eq 0) { $available=$choices }
  return $available[$script:rng.Next($available.Count)]
