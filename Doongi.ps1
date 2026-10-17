@@ -174,6 +174,12 @@ for ($i=0; $i -lt 4; $i++) {
     $script:lookSprites += $frame
 }
 function React-ToPoke([double]$t) {
+    if (Start-RepeatPoke $t) { return }
+    if ($null -ne $script:cameraScene) {
+        $script:attentionStart=$t; $script:attentionEnd=$t+1.0
+        Say-Random ($script:cameraScene.kind+'Poke') -Poke
+        return
+    }
     if ($null -ne $script:roam) {
         if ($null -eq $script:roam.pausedAt) { $script:roam.pausedAt=$t }
         $script:roam.pauseUntil=$t+1.0
@@ -293,6 +299,7 @@ function Animate-Pet([double]$t) {
         if ($null -eq $script:dropStart -and (Get-DueDetail $t) -eq 'drop') { Start-PhoneDrop $t }
         if ($null -ne $script:dropStart) {
             $dt=$t-$script:dropStart
+            if ($script:chaosEnabled) { $dt*=2.0 }
             $sx=1; $sy=1; $angle=0; $y=0
             if ($dt -lt 0.65) {
                 $script:pet.Source=$script:blinkSprites[1]
@@ -436,6 +443,8 @@ function Say([string]$message) {
     Update-BubblePosition
 }
 function Set-Pose([int]$index, [switch]$Immediate) {
+    $script:cameraScene=$null; $script:pokeScene=$null
+    $script:pokeCount=0; $script:lastPokeAt=-10.0
     $previousMode=$script:mode; $previousSource=$script:pet.Source
     if ($previousMode -ne $index) { $script:previousActivity=$previousMode }
     $script:poseTransition=$null
@@ -466,6 +475,7 @@ function Keep-OnScreen {
 . (Join-Path $PSScriptRoot 'Transitions.ps1')
 . (Join-Path $PSScriptRoot 'Runtime.ps1')
 . (Join-Path $PSScriptRoot 'Pomodoro.ps1')
+. (Join-Path $PSScriptRoot 'Chaos.ps1')
 Set-Pose 1 -Immediate
 $area = [System.Windows.SystemParameters]::WorkArea
 $window.Left = $area.Right - $window.Width - 24
@@ -513,6 +523,11 @@ $menu = New-Object Windows.Controls.ContextMenu
 function Add-Menu([string]$label, [scriptblock]$action) {
     $item = New-Object Windows.Controls.MenuItem
     $item.Header = $label
+    $item.Add_Click({
+        param($sender,$eventArgs)
+        if ($script:chaosEnabled -and [string]$sender.Header -notmatch '^(뽀모도로|크기 바꾸기|끼끼 퇴근)') { Set-ChaosEnabled $false -Quiet }
+        if ([string]$sender.Header -notmatch '^(뽀모도로|크기 바꾸기)') { $script:cameraScene=$null; $script:pokeScene=$null }
+    })
     $item.Add_Click($action)
     $item.Add_Click({ Sync-PetTimers })
     [void]$menu.Items.Add($item)
@@ -520,6 +535,13 @@ function Add-Menu([string]$label, [scriptblock]$action) {
 Add-Menu '알아서 놀기' { $script:auto=$true; if ($script:mode -eq 2) { Say '응… 나 쪼끔만 더 잘래.' } else { Say-Random 'auto' } }
 Add-Menu '바나나 먹기' { $script:auto=$false; Set-Pose 0; Say-Random }
 Add-Menu '폰 보기' { $script:auto=$false; Set-Pose 1; Say-Random }
+Add-Menu '셀카 찍기' { $script:motion=$true; Start-CameraScene 'selfie' $script:clock.Elapsed.TotalSeconds }
+Add-Menu '릴스 찍기' { $script:motion=$true; Start-CameraScene 'reels' $script:clock.Elapsed.TotalSeconds }
+$script:chaosMenu=New-Object Windows.Controls.MenuItem
+$script:chaosMenu.Header='야랄 모드 · 3초마다 난리 나기'
+$script:chaosMenu.IsCheckable=$true
+$script:chaosMenu.Add_Click({ Set-ChaosEnabled (-not $script:chaosEnabled); Sync-PetTimers })
+[void]$menu.Items.Add($script:chaosMenu)
 Add-Menu '폰 보다가 꾸벅…' { $script:auto=$false; $script:motion=$true; Set-Pose 1 -Immediate; Start-PhoneDrop $script:clock.Elapsed.TotalSeconds }
 Add-Menu '낮잠 자기' { $script:auto=$false; Set-Pose 2; Say-Random }
 Add-Menu '누워서 자세 고치기' { $script:motion=$true; $script:auto=$false; Set-Pose 2 -Immediate; Start-Rest $script:clock.Elapsed.TotalSeconds }
@@ -613,15 +635,21 @@ $timer.Add_Tick({
     Update-PokeFollowup
     if ($script:window.IsVisible) {
         $script:tick++
+        Update-Chaos $script:clock.Elapsed.TotalSeconds
+        if (-not $SelfTest -and (Get-DueDetail $script:clock.Elapsed.TotalSeconds) -eq 'camera' -and -not $script:pet.ContextMenu.IsOpen) {
+            Start-CameraScene (@('selfie','reels')[$script:rng.Next(2)]) $script:clock.Elapsed.TotalSeconds
+        }
         Animate-Pet $script:clock.Elapsed.TotalSeconds
         Update-Rest $script:clock.Elapsed.TotalSeconds
         Update-Roam $script:clock.Elapsed.TotalSeconds
         Update-BackTurn $script:clock.Elapsed.TotalSeconds
         Render-PostureTransition $script:clock.Elapsed.TotalSeconds
+        Render-CameraScene $script:clock.Elapsed.TotalSeconds
+        Render-RepeatPoke $script:clock.Elapsed.TotalSeconds
         Render-PetLift $script:clock.Elapsed.TotalSeconds
         Update-BubblePosition
         if ($now -gt $script:bubbleUntil) { $script:bubble.Visibility='Hidden' }
-        if ($script:auto -and -not $script:pressed -and -not $script:dragging -and $script:clock.Elapsed.TotalSeconds -ge $script:sulkEnd -and $null -eq $script:roam -and $null -eq $script:rest -and $null -eq $script:backTurn -and $null -eq $script:poseTransition -and $null -eq $script:dropStart -and $script:clock.Elapsed.TotalSeconds -ge $script:expressionEnd -and $script:clock.Elapsed.TotalSeconds -ge $script:attentionEnd -and $now -gt $script:nextChange) {
+        if (-not $script:chaosEnabled -and $null -eq $script:cameraScene -and $script:auto -and -not $script:pressed -and -not $script:dragging -and $script:clock.Elapsed.TotalSeconds -ge $script:sulkEnd -and $null -eq $script:roam -and $null -eq $script:rest -and $null -eq $script:backTurn -and $null -eq $script:poseTransition -and $null -eq $script:dropStart -and $script:clock.Elapsed.TotalSeconds -ge $script:expressionEnd -and $script:clock.Elapsed.TotalSeconds -ge $script:attentionEnd -and $now -gt $script:nextChange) {
             Continue-Life
 
         }
@@ -874,6 +902,8 @@ if ($SelfTest) {
     if (-not $script:timer.IsEnabled) { throw 'Show must restart the animation timer' }
     Write-Output 'PASS: hide/show retains position and class timer; hidden animation polling stops.'
     Write-Output ('PASS: 78 sprites; upward lift/wriggle/release; four-stage hand pickup; rest/eat/phone poses and interruption; aligned eight-frame gait; distance easing; expressions; phone drop; quiet poke; roam/stretch/bounds/settle/cancel/disable; WPF layout; {0} menu entries.' -f $menu.Items.Count)
+    . (Join-Path $PSScriptRoot 'Chaos.Tests.ps1')
+    Invoke-ChaosSelfTest
     $window.Close()
     exit 0
 }

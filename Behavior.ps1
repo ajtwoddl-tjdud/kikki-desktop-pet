@@ -20,15 +20,17 @@ function Get-WalkDestination([double]$from,[double]$low,[double]$high,[bool]$acr
  return $target
 }
 function Test-RoamDue([double]$t) {
- return $script:roamEnabled -and $script:motion -and $script:mode -ne 2 -and $t -ge $script:nextRoam
+ return -not $script:chaosEnabled -and $null -eq $script:cameraScene -and $script:roamEnabled -and $script:motion -and $script:mode -ne 2 -and $t -ge $script:nextRoam
 }
 function Get-DueDetail([double]$t) {
+ if ($script:chaosEnabled -or $null -ne $script:cameraScene) { return '' }
  if (-not $script:motion -or $t -lt $script:quietUntil -or $script:pressed -or $script:dragging -or $t -lt $script:attentionEnd -or $t -lt $script:sulkEnd -or $t -lt $script:expressionEnd -or $null -ne $script:poseTransition -or $null -ne $script:roam -or $null -ne $script:rest -or $null -ne $script:dropStart -or $null -ne $script:backTurn -or (Test-RoamDue $t)) { return '' }
  $action=''; $deadline=[double]::PositiveInfinity
  if ($script:nextRest -le $t) { $action='rest'; $deadline=$script:nextRest }
  if ($script:mode -eq 1 -and $script:nextDrop -le $t -and $script:nextDrop -lt $deadline) { $action='drop'; $deadline=$script:nextDrop }
  if ($script:mode -ne 2 -and $script:nextExpression -le $t -and $script:nextExpression -lt $deadline) { $action='expression'; $deadline=$script:nextExpression }
- if ($script:auto -and $script:mode -ne 2 -and $script:nextBack -le $t -and $script:nextBack -lt $deadline) { $action='back' }
+ if ($script:auto -and $script:mode -ne 2 -and $script:nextBack -le $t -and $script:nextBack -lt $deadline) { $action='back'; $deadline=$script:nextBack }
+ if ($script:auto -and $script:mode -eq 1 -and $null -ne $script:nextCamera -and $script:nextCamera -le $t -and $script:nextCamera -lt $deadline) { $action='camera' }
  return $action
 }
 function Continue-Life {

@@ -90,7 +90,13 @@ function Get-PomodoroPokeReply([string]$Fallback,[int]$Roll=-1) {
  if ($Roll -lt 0) { $Roll=$script:rng.Next(100) }
  if ($Roll -ge $chance) { return $Fallback }
  $choices=@('넌 빨리 공부해~ 난 여기 있을게.', '나 누를 시간에 한 줄 더 읽어~', '공부는 네가 해. 귀여운 건 내가 할게.', '나 그만 봐~ 나도 공부하는 줄 알겠어.', '넌 빨리 공부해~ 나는 원래 이러고 살아.', '나한테 딴짓하러 왔지? 쪼끔만 보고 돌아가~')
- $activityLines=if ($null -ne $script:roam) {
+ $activityLines=if ($null -ne $script:cameraScene) {
+  if ($script:cameraScene.kind -eq 'selfie') {
+   @('너도 찍어줄게. 공부 끝나면~','난 사진 찍을게. 넌 공부해~','나 구경은 쉬는 시간에~')
+  } else {
+   @('내 춤 구경은 쉬는 시간에 해~','넌 공부해. 춤은 내가 출게~','같이 놀려면 공부부터 끝내고 와~')
+  }
+ } elseif ($null -ne $script:roam) {
   @('난 산책할게. 넌 공부하고 있어~','내가 걷는 동안 넌 쪼끔 더 해~','끼끼는 산책 중. 너는 집중 중이잖아~','나 따라오지 말고 할 거 마저 해~','나 산책 갔다 올 때까지 쫌 해놔~')
  } elseif ($null -ne $script:backTurn) {
   @('난 여기서 쉴게. 넌 공부해~','고개 돌려줬다. 이제 공부하러 가~','나 안 갔어. 집중 끝날 때까지 여기 있을게.','내 뒤통수 말고 할 거 봐~','등 돌려도 네가 딴짓하는 건 알지~')

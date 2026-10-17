@@ -50,6 +50,7 @@ function Render-PostureTransition([double]$t) {
  if ($null -eq $script:poseTransition) { return }
  if (-not $script:motion -or $script:pressed -or $script:dragging) { $script:poseTransition=$null; return }
  $scene=$script:poseTransition; $age=[Math]::Max(0.0,$t-$scene.start)
+ if ($script:chaosEnabled) { $age*=3.0 }
  if ($age -ge $scene.duration) { $script:poseTransition=$null; return }
  $frameTime=$scene.route.Count*0.22
  $index=[Math]::Min($scene.route.Count-1,[int][Math]::Floor($age/0.22))
