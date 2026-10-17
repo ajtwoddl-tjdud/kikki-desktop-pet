@@ -10,9 +10,9 @@ $script:lastPokeAt=-10.0
 $script:pokeCount=0
 $script:extraLines.selfie=@('잠깐. 사진 찍고.','아 흔들렸잖아~','이 각도 쫌 괜찮은데?','한 장만 더. 진짜 마지막.')
 $script:extraLines.reels=@('잠깐. 찍고 있어.','아 다시. 박자 놓쳤어.','이거 올릴까 말까.','아 웃지 마~ 나 진지해.')
-$script:extraLines.selfiePoke=@('아 사진에 손 나와~','찍어줄 거야? 예쁘게 찍어.','잠깐. 눈 감았잖아.','나 찍을 때 건드리지 마~')
-$script:extraLines.reelsPoke=@('아 NG잖아~','잠깐. 지금 찍고 있어.','웃지 마. 나 박자 세는 중.','너도 출래? 옆으로 와.')
-$script:extraLines.repeatPoke=@('아 왜 자꾸 눌러~','나 버튼 아니거든~','알았어 알았어. 보고 있잖아.','너 쫌 심심하구나?','아 간지러. 그만~','왜애. 나 그렇게 좋아?')
+$script:extraLines.selfiePoke=@('아 사진에 손 나와~','찍어줄 거야? 예쁘게 찍어.','잠깐. 눈 감았잖아.','나 찍을 때 건드리지 마~', '셀카 찍는 끼끼 처음 봐?', '왜? 나도 사진 찍을 수 있지.', '구경만 하지 말고 잘 나왔나 봐줘.', '끼끼 사진 갖고 싶어서 왔어?')
+$script:extraLines.reelsPoke=@('아 NG잖아~','잠깐. 지금 찍고 있어.','웃지 마. 나 박자 세는 중.','너도 출래? 옆으로 와.', '춤추는 끼끼 처음 봐?', '왜? 끼끼가 춤추니까 신기해?', '나 보러 온 거면 박수도 쫌 쳐줘.', '끼끼도 릴스 찍거든~')
+$script:extraLines.repeatPoke=@('아 왜 자꾸 눌러~','나 버튼 아니거든~','알았어 알았어. 보고 있잖아.','너 쫌 심심하구나?','아 간지러. 그만~','왜애. 나 그렇게 좋아?', '끼끼 처음 만져봐?', '나 여기 있는 거 확인하는 거야?', '왜? 누르면 더 귀여워질까 봐?')
 
 $cameraBitmap=[Windows.Media.Imaging.BitmapImage]::new()
 $cameraBitmap.BeginInit()
