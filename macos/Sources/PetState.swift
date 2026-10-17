@@ -5,7 +5,7 @@ enum Activity: Int, CaseIterable {
 
     var title: String { ["바나나 먹기", "폰 보기", "낮잠 자기", "게임하기"][rawValue] }
     var line: String {
-        ["냠. 이건 내가 잘 먹지.", "누워서 폰 보는 게 젤 편해.", "쪼끔만 더 잘래…", "나 한 판 하고 있을게."][rawValue]
+        ["이거 먹고 쉴래.", "이것만 보고 잘게.", "나 쫌만 더…", "나 한 판만 하고."][rawValue]
     }
     var duration: Double {
         Double.random(in: 120...240)
@@ -94,7 +94,7 @@ final class PetState {
     var backEnd: Double?
     var peekStart = -10.0
     var liftStart = 0.0
-    var message = "야르. 끼끼 왔어."
+    var message = "안녕하숭~"
     var bubbleEnd = 6.0
     var classEnd: Date?
     var pendingClassEnd = false
@@ -156,7 +156,7 @@ final class PetState {
         pressed = false; dragging = false; lifted = false
         visible.toggle()
         if visible && pendingClassEnd {
-            say("시간 다 됐다. 고생했어. 야르.", seconds: 12)
+            say("끝났다. 이제 쉬자.", seconds: 12)
             pendingClassEnd = false
         }
     }
@@ -174,21 +174,21 @@ final class PetState {
             clearScene()
             attentionEnd = time + 2.3
             sayContext(["eatPoke", "phonePoke", "sleepPoke", "gamePoke"][activity.rawValue],
-                       fallback: ["왜? 나 먹고 있잖아.", "응? 너 보고 있어.", "응… 쪼끔만 더 잘래.", "잠깐만. 이 판 쪼끔만 하고."][activity.rawValue], seconds: 3)
+                       fallback: ["왜? 나 먹고 있잖아.", "왜애. 나 댓글 읽잖아.", "불렀으면 쓰다듬고 가…", "왜. 나도 누를 줄 알아."][activity.rawValue], seconds: 3)
         }
     }
 
     func startWalk(from: Double, to: Double) {
         guard motion, roaming, !busy, abs(to - from) >= 12 else { return }
         walk = Walk(from: from, to: to, start: time)
-        sayContext("walk", fallback: "끼끼 산책 간다.")
+        sayContext("walk", fallback: "나 저쪽 갔다 올게.")
     }
 
     // Returns the horizontal position so the platform layer owns screen coordinates.
     func advance(by delta: Double, now: Date) -> Double? {
         if let end = classEnd, now >= end {
             classEnd = nil
-            if visible { say("시간 다 됐다. 고생했어. 야르.", seconds: 12) }
+            if visible { say("끝났다. 이제 쉬자.", seconds: 12) }
             else { pendingClassEnd = true }
         }
         guard visible else { return nil }
@@ -223,7 +223,7 @@ final class PetState {
             let finishedGame = activity == .game
             setActivity(activity.next(roll: Int.random(in: 0..<100), excluding: previousActivity))
             sayContext(finishedGame ? "gameLoss" : activity == .game ? "gameStart" : "pose",
-                       fallback: finishedGame ? "한 판 끝! 이제 쪼끔 쉬자." : activity.line)
+                       fallback: finishedGame ? "한 판 끝. 쫌 쉬자." : activity.line)
         }
         if motion && !busy && time >= quietUntil && !walkIsDue {
             // Pick the oldest eligible deadline so one kind of action cannot starve the others.
@@ -247,7 +247,7 @@ final class PetState {
             case "expression":
                 expressionEnd = time + 1.15; nextExpression = time + Double.random(in: 120...240)
                 quietUntil = expressionEnd + Double.random(in: 120...240)
-                sayContext(activity == .game ? "gameCheer" : "playful", fallback: "히히. 나 봤어?")
+                sayContext(activity == .game ? "gameCheer" : "playful", fallback: "아 왜 웃어.")
             default: break
             }
         }

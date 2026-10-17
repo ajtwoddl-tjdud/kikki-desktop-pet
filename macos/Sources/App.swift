@@ -61,7 +61,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let sprites = try Sprites(directory: resources.appendingPathComponent("assets"))
             state.dialogue = MischiefDialogue(catalog: try MischiefCatalog(url: resources.appendingPathComponent("assets/mischief.json")))
             state.dialogue?.level = MischiefLevel(rawValue: UserDefaults.standard.string(forKey: "mischiefLevel") ?? "") ?? .normal
-            state.sayContext("hello", fallback: "야르. 끼끼 왔어.")
+            state.sayContext("hello", fallback: "안녕하숭~")
             panel = PetPanel(contentRect: NSRect(x: 0, y: 0, width: 232, height: 270),
                              styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
             panel.title = "끼끼"
@@ -240,10 +240,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         add("등 돌리고 쉬기") { [self] in state.clearScene(); state.backEnd = state.time + 60; state.peekStart = -10 }
         add("윙크 한 번 해봐") { [self] in
-            state.setActivity(.banana, transition: false); state.expressionEnd = state.time + 1.15; state.say("윙크. 너한테 해준 거야. 헤헤.")
+            state.setActivity(.banana, transition: false); state.expressionEnd = state.time + 1.15; state.say("봤어? 한 번만 해줄 거야.")
         }
         add("메롱 해봐") { [self] in
-            state.setActivity(.game, transition: false); state.expressionEnd = state.time + 1.15; state.say("메롱. 쪼끔 킹받지? 헤헤.")
+            state.setActivity(.game, transition: false); state.expressionEnd = state.time + 1.15; state.say("메롱. 아 봤어?")
         }
         add("움직임 줄이기 / 다시 신나게") { [self] in state.setMotion(!state.motion); state.say("이 정도 텐션 어때.") }
         let mischiefMenu = NSMenu(title: "킹받기 조절")

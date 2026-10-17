@@ -22,7 +22,7 @@ function Start-Pomodoro([int]$Focus,[int]$Rest,[int]$Rounds,[datetime]$Now=[Date
  $script:pomodoro=@{phase='focus';round=1;rounds=$Rounds;focusSeconds=$Focus*60;restSeconds=$Rest*60;deadline=$Now.AddMinutes($Focus);paused=$false;remaining=0.0}
  $script:classEnd=$null; $script:pendingClassEnd=$false
  $script:pendingPomoNotice=$null
- Say ('집중 {0}분 시작! 끝나면 내가 알려줄게.' -f $Focus)
+ Say ('집중 {0}분. 끝나면 불러줄게.' -f $Focus)
  Sync-PomodoroTimer
  if ($null -ne $script:classTimer) { Sync-PetTimers }
 }
@@ -41,7 +41,7 @@ function Get-PomodoroRemaining([datetime]$Now=[DateTime]::UtcNow) {
  return ('{0}{1}분 남았어.' -f $prompt,[int][Math]::Ceiling($seconds/60.0))
 }
 function Toggle-PomodoroPause([datetime]$Now=[DateTime]::UtcNow) {
- if ($null -eq $script:pomodoro) { Say '돌아가는 타이머는 없어. 먼저 시작해 줘.'; return }
+ if ($null -eq $script:pomodoro) { Say '타이머부터 켜줘.'; return }
  Update-Pomodoro $Now
  if ($null -eq $script:pomodoro) { return }
  $p=$script:pomodoro
@@ -67,15 +67,15 @@ function Update-Pomodoro([datetime]$Now=[DateTime]::UtcNow) {
   $p=$script:pomodoro
   if ($p.phase -eq 'focus') {
    if ($p.round -ge $p.rounds) {
-    $notice=('집중 {0}번 다 끝났다! 고생했어. 이제 푹 쉬자.' -f $p.rounds)
+    $notice=('집중 {0}번 다 끝났다. 이제 쉬자.' -f $p.rounds)
     $script:pomodoro=$null
    } else {
     $p.phase='rest'; $p.deadline=$p.deadline.AddSeconds($p.restSeconds)
-    $notice=('집중 끝! {0}분 쉬자. 나랑 쪼끔 쉬어.' -f $script:pomoSettings.rest)
+    $notice=('집중 끝. {0}분 쉬자.' -f $script:pomoSettings.rest)
    }
   } else {
    $p.round++; $p.phase='focus'; $p.deadline=$p.deadline.AddSeconds($p.focusSeconds)
-   $notice=('휴식 끝! {0}번째 집중 시작이야. {1}분 뒤에 보자.' -f $p.round,$script:pomoSettings.focus)
+   $notice=('휴식 끝. {0}번째야. {1}분만 더.' -f $p.round,$script:pomoSettings.focus)
   }
  }
  if ($null -ne $notice) {
@@ -89,29 +89,29 @@ function Get-PomodoroPokeReply([string]$Fallback,[int]$Roll=-1) {
  $chance=switch ($script:mischiefLevel) { 'normal' {60} 'mild' {20} default {0} }
  if ($Roll -lt 0) { $Roll=$script:rng.Next(100) }
  if ($Roll -ge $chance) { return $Fallback }
- $choices=@('넌 빨리 공부해~ 난 여기 있을게.', '나 누를 시간에 한 줄 더 읽어~', '공부는 네가 해. 귀여운 건 내가 할게.', '나 그만 봐~ 나도 공부하는 줄 알겠어.', '넌 빨리 공부해~ 나는 원래 이러고 살아.', '나한테 딴짓하러 왔지? 쪼끔만 보고 돌아가~')
+ $choices=@('넌 빨리 공부해~', '나 누를 시간에 한 줄 더 읽어~', '나 그만 보고 공부해~', '왜 왔어. 아직 안 끝났는데.', '끝나면 놀아줄게. 아직은 안 돼.', '나 핑계로 쉬러 왔지.')
  $activityLines=if ($null -ne $script:cameraScene) {
   if ($script:cameraScene.kind -eq 'selfie') {
-   @('너도 찍어줄게. 공부 끝나면~','난 사진 찍을게. 넌 공부해~','나 구경은 쉬는 시간에~')
+   @('너도 찍어줄게. 공부 끝나면.','사진 구경은 끝나고 해~','나 구경은 쉬는 시간에.')
   } else {
-   @('내 춤 구경은 쉬는 시간에 해~','넌 공부해. 춤은 내가 출게~','같이 놀려면 공부부터 끝내고 와~')
+   @('춤 구경은 끝나고 해~','넌 공부해. 난 찍던 거 마저 찍고.','같이 놀 거면 다 하고 와.')
   }
  } elseif ($null -ne $script:roam) {
-  @('난 산책할게. 넌 공부하고 있어~','내가 걷는 동안 넌 쪼끔 더 해~','끼끼는 산책 중. 너는 집중 중이잖아~','나 따라오지 말고 할 거 마저 해~','나 산책 갔다 올 때까지 쫌 해놔~')
+  @('나 걷고 올게. 넌 공부해~','나 갔다 올 때까지 쫌 해놔.','따라오지 마. 공부하던 거 마저 해.','구경 그만. 나 안 도망가.','나 올 때까지 한 쪽만 더.')
  } elseif ($null -ne $script:backTurn) {
-  @('난 여기서 쉴게. 넌 공부해~','고개 돌려줬다. 이제 공부하러 가~','나 안 갔어. 집중 끝날 때까지 여기 있을게.','내 뒤통수 말고 할 거 봐~','등 돌려도 네가 딴짓하는 건 알지~')
+  @('난 여기 쉴게. 넌 공부해~','응. 봤어. 이제 공부해.','나 안 갔어. 마저 하고 와.','내 뒤통수 말고 책 봐~','또 왔네. 아직 안 끝났는데.')
  } else {
   switch ($script:mode) {
-   0 { @('난 바나나 먹을게. 넌 빨리 공부해~','나는 한 입 더. 너는 한 줄 더~','내 간식 시간이지, 네 쉬는 시간은 아직 아니야~','나 씹는 동안 쪼끔만 더 해~','너도 다 하면 간식 먹자. 아직은 말고~') }
-   1 { @('난 폰 봐도 돼. 넌 집중해~','내 폰 같이 보러 온 거야? 아직 쉬는 시간 아니지~','나만 누워 있는 거야. 넌 공부 마저 해~','너까지 폰 보러 가면 안 되는데~','난 누워서 기다릴게. 끝나면 불러~') }
-   2 { @('난 쪼끔 잘게… 넌 공부해~','나 깨울 시간에 쪼끔만 더 해…','난 자도 돼… 넌 아직 집중 시간이잖아~','끝나면 깨워… 지금은 공부해~','내가 눈 감고 있어도 딴짓하면 안 된다…') }
-   3 { @('난 한 판 더. 넌 한 줄 더~','내 게임 구경은 쉬는 시간에 해~','나는 컨트롤러 보고, 너는 할 거 보고~','공부 끝나면 놀아줄게. 지금은 안 돼~','난 노는 데 집중할게. 넌 공부에 집중해~') }
+   0 { @('난 먹을게. 넌 공부해~','한 입만 먹고. 넌 한 줄만 더.','아직 안 끝났어. 간식은 이따가.','나 이거 먹는 동안 쫌만 더 해.','다 하면 너도 뭐 먹자.') }
+   1 { @('난 폰 봐도 돼. 넌 집중해~','지금 같이 보면 안 되잖아~','너까지 눕지는 마~','넌 폰 내려놔. 아직 안 끝났어.','다 하면 와. 같이 보자.') }
+   2 { @('난 잘게… 넌 공부해…','나 깨우지 말고 한 줄 더…','너까지 자는 건 아니지…?','끝나면 깨워…','안 끝났는데 왜 왔어…') }
+   3 { @('나 한 판만 더. 넌 한 쪽만 더.','구경은 끝나고 해~','나 말고 책 봐~','다 하면 놀아줄게.','나도 집중 중이야. 넌 공부하고.') }
   }
  }
  $choices+=@($activityLines)
  $remaining=($script:pomodoro.deadline-[DateTime]::UtcNow).TotalSeconds
- if ($remaining -le 60) { $choices+=@('이제 쪼끔 남았어. 마저 하고 같이 쉬자~','곧 끝나는데 나 누르고 있네~ 쪼끔만 더 해.') }
- elseif ($script:pomodoro.focusSeconds-$remaining -lt 60) { $choices+=@('방금 시작했잖아. 벌써 끼끼 보러 왔어?','시작한 지 얼마 안 됐는데~ 쪼끔만 집중해.') }
+ if ($remaining -le 60) { $choices+=@('거의 다 했어. 끝나면 같이 쉬자.','쫌만 더 하면 되는데 왜 왔어~') }
+ elseif ($script:pomodoro.focusSeconds-$remaining -lt 60) { $choices+=@('방금 시작했잖아. 벌써 왔어?','아직 얼마 안 됐어. 앉아 있어~') }
  $available=@($choices | Where-Object { -not $script:recentLines.Contains($_) })
  if ($available.Count -eq 0) { $available=$choices }
  return $available[$script:rng.Next($available.Count)]

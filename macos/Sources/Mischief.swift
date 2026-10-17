@@ -6,7 +6,7 @@ enum MischiefLevel: String, CaseIterable {
     var chance: Int { self == .normal ? 60 : self == .mild ? 20 : 0 }
     var cooldown: Double { self == .mild ? 120 : 30 }
     var acknowledgement: String {
-        self == .normal ? "알겠어. 쪼끔 킹받게 해볼게." : self == .mild ? "응. 가끔만 장난칠게." : "알았어. 순하게 옆에 있을게."
+        self == .normal ? "알았어. 쫌만 장난칠게." : self == .mild ? "응. 가끔만 장난칠게." : "알았어. 옆에 있을게."
     }
 }
 

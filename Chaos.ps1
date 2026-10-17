@@ -8,11 +8,11 @@ $script:nextCamera=$script:rng.Next(120,241)
 $script:pokeScene=$null
 $script:lastPokeAt=-10.0
 $script:pokeCount=0
-$script:extraLines.selfie=@('잠깐. 사진 찍고.','아 흔들렸잖아~','이 각도 쫌 괜찮은데?','한 장만 더. 진짜 마지막.')
-$script:extraLines.reels=@('잠깐. 찍고 있어.','아 다시. 박자 놓쳤어.','이거 올릴까 말까.','아 웃지 마~ 나 진지해.')
-$script:extraLines.selfiePoke=@('아 사진에 손 나와~','찍어줄 거야? 예쁘게 찍어.','잠깐. 눈 감았잖아.','나 찍을 때 건드리지 마~', '셀카 찍는 끼끼 처음 봐?', '왜? 나도 사진 찍을 수 있지.', '구경만 하지 말고 잘 나왔나 봐줘.', '끼끼 사진 갖고 싶어서 왔어?')
-$script:extraLines.reelsPoke=@('아 NG잖아~','잠깐. 지금 찍고 있어.','웃지 마. 나 박자 세는 중.','너도 출래? 옆으로 와.', '춤추는 끼끼 처음 봐?', '왜? 끼끼가 춤추니까 신기해?', '나 보러 온 거면 박수도 쫌 쳐줘.', '끼끼도 릴스 찍거든~')
-$script:extraLines.repeatPoke=@('아 왜 자꾸 눌러~','나 버튼 아니거든~','알았어 알았어. 보고 있잖아.','너 쫌 심심하구나?','아 간지러. 그만~','왜애. 나 그렇게 좋아?', '끼끼 처음 만져봐?', '나 여기 있는 거 확인하는 거야?', '왜? 누르면 더 귀여워질까 봐?')
+$script:extraLines.selfie=@('잠깐. 사진 한 장만.', '이쪽으로 찍어볼까.', '아 눈 감았어. 다시.', '한 장만 더.', '잠깐. 각도 쫌.', '잘 나왔나 볼래.')
+$script:extraLines.reels=@('한 번만 찍어볼게.', '이거 올릴까 말까.', '잠깐. 박자 쫌 세고.', '이번엔 안 틀릴게.', '아 다시. 박자 놓쳤어.', '찍고 확인해보자.')
+$script:extraLines.selfiePoke=@('잠깐. 나 지금 눈 감았어. 다시.', '구경만 하지 말고 찍어줘.', '아 사진에 손 나와.', '이쪽 말고 반대쪽에서.', '잠깐. 아직 안 찍었어.', '잘 나왔나 봐줘.')
+$script:extraLines.reelsPoke=@('아 언제부터 봤어.', '아 쫌. 찍고 있잖아.', '웃지 마. 박자 세는 중이야.', '방금 건 다시 찍을 거야.', '잠깐. 여기부터 다시.', '볼 거면 박수라도 쳐줘.')
+$script:extraLines.repeatPoke=@('알았어. 보고 있잖아.', '아 쫌. 간지러.', '왜 자꾸 불러.', '할 말 생각하고 눌러.', '응. 아직 여기 있어.', '잠깐. 하나씩 말해.')
 
 $cameraBitmap=[Windows.Media.Imaging.BitmapImage]::new()
 $cameraBitmap.BeginInit()
@@ -110,7 +110,7 @@ function Start-ChaosAction([string]$action,[double]$t) {
     # Use the full three seconds to travel, including the usual smooth easing.
     $script:roam.start=$t-1.1; $script:roam.seconds=3.0
    }
-   Say '나 저쪽 좀 갔다 올게!'
+   Say '나 저쪽 갔다 올게.'
   }
   'banana' { Set-Pose 0 -Immediate; Say-Random }
   'phone' { Set-Pose 1; Say-Random }
@@ -138,7 +138,7 @@ function Set-ChaosEnabled([bool]$enabled,[switch]$Quiet) {
    Set-Variable -Name $name -Scope Script -Value ($t+$script:rng.Next(120,241))
   }
   $script:quietUntil=$t+3
-  if (-not $Quiet) { Say '휴. 쫌 놀았다. 이제 쉴래.' }
+  if (-not $Quiet) { Say '휴. 이제 쫌 쉬자.' }
  }
  if ($null -ne $script:chaosMenu) { $script:chaosMenu.IsChecked=$enabled }
 }
