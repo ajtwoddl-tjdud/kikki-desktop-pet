@@ -60,7 +60,7 @@ function Start-Rest([double]$t) {
  if ($null -ne $script:poseTransition) { return }
  if ($null -ne $script:backTurn) { return }
  if (-not $script:motion -or $null -ne $script:rest -or $null -ne $script:roam -or $null -ne $script:dropStart -or $script:pressed -or $script:dragging -or $t -lt $script:attentionEnd) { return }
- $first=@(4,2,0,0)[$script:mode]; $hold=@(4.0,25.0,90.0,4.0)[$script:mode]
+ $first=@(4,2,0,0)[$script:mode]; $hold=Get-RestHoldSeconds $script:mode
  $script:rest=@{start=$t;mode=$script:mode;first=$first;hold=$hold;stage=-1;lastSource=$script:pet.Source;previous=$script:pet.Source;changed=$t}
  # Count from the last small action, not after its long-held pose finishes.
  $script:nextRest=$t+$script:rng.Next(120,241)

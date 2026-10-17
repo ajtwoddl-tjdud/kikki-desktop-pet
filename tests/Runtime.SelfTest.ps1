@@ -89,6 +89,17 @@ foreach ($mode in 0..3) {
     }
     $seconds=Get-ActivitySeconds $mode
     Assert ($seconds -ge 120 -and $seconds -le 240) 'Activity must last two to four minutes'
+    foreach ($sample in 1..20) {
+        $hold=Get-RestHoldSeconds $mode
+        $delay=Get-FirstRestDelay $mode
+        if ($mode -in @(1,2)) {
+            Assert ($hold -ge 120 -and $hold -le 210) 'Side rest must last two to three and a half minutes'
+            Assert ($delay -ge 25 -and $delay -le 55) 'Lying activities must turn to the side within 25 to 55 seconds'
+        } else {
+            Assert ($hold -eq 4) 'Eating and gaming details unexpectedly became long rest scenes'
+            Assert ($delay -ge 120 -and $delay -le 240) 'Non-resting activities received rapid posture changes'
+        }
+    }
 }
 Assert ((Get-WalkDestination 988 12 988 $true 300) -eq 12) 'Right-edge walk stopped short'
 Assert ((Get-WalkDestination 12 12 988 $true -300) -eq 988) 'Left-edge walk stopped short'

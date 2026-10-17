@@ -459,6 +459,12 @@ function Set-Pose([int]$index, [switch]$Immediate) {
     $script:fallingPhone.Visibility='Hidden'
     $script:pet.Source = $script:sprites[$index]
     $script:nextChange = [DateTime]::Now.AddSeconds((Get-ActivitySeconds $index))
+    # Turn onto the side early within a long rest, without postponing other clocks.
+    if (-not $script:chaosEnabled -and $index -in @(1,2) -and $previousMode -ne $index) {
+        $sideDue=$script:clock.Elapsed.TotalSeconds+(Get-FirstRestDelay $index)
+        $script:nextRest=[Math]::Min($script:nextRest,$sideDue)
+        $script:quietUntil=[Math]::Min($script:quietUntil,$sideDue)
+    }
     if (-not $SelfTest -and -not $Immediate) { Start-PostureTransition $previousMode $index $script:clock.Elapsed.TotalSeconds $previousSource }
 }
 function Keep-OnScreen {
@@ -731,7 +737,7 @@ if ($SelfTest) {
     Set-Pose 0
     $savedRoamDeadline=$script:nextRoam; $savedDetailDeadline=$script:nextRest; $savedExpressionDeadline=$script:nextExpression
     Set-Pose 3
-    if ($script:nextRoam -ne $savedRoamDeadline -or $script:nextRest -ne $savedDetailDeadline -or $script:nextExpression -ne $savedExpressionDeadline) { throw 'Activity changes must not postpone walking or details' }
+    if ($script:nextRoam -ne $savedRoamDeadline -or $script:nextRest -gt $savedDetailDeadline -or $script:nextExpression -ne $savedExpressionDeadline) { throw 'Activity changes must not postpone walking or details' }
     Start-Roam 300
     if ($null -eq $script:roam) { throw 'Roam failed to start' }
     $target=$script:roam.toX
@@ -782,15 +788,28 @@ if ($SelfTest) {
         $activityDeadline=$script:nextChange
         Start-Rest 600
         if ($null -eq $script:rest) { throw 'Rest action missing' }
+        if ($script:nextChange -lt $activityDeadline) { throw 'Side resting shortened the activity' }
+        $activityDeadline=$script:nextChange
         $detailDue=$script:nextRest
         if ($detailDue -lt 720 -or $detailDue -gt 840) { throw 'Small actions must recur within two to four minutes' }
         Update-Rest 601.2
         $expectedSource=if ($i -eq 3) { $script:rest.gameSource } else { $script:restSprites[@(5,3,1)[$i]] }
         if (-not [Object]::ReferenceEquals($pet.Source,$expectedSource)) { throw 'Rest pose incorrect' }
+        if ($i -in @(1,2)) {
+            Update-Rest 660
+            if ($null -eq $script:rest -or -not [Object]::ReferenceEquals($pet.Source,$expectedSource)) { throw 'Side pose did not remain visible for a full minute' }
+        }
         Update-Rest (600+$script:rest.hold+1)
         if ($null -ne $script:rest -or $pet.Opacity -ne 1) { throw 'Rest action failed to finish' }
         if ($script:nextRest -ne $detailDue -or $script:mode -ne $i -or $script:nextChange -ne $activityDeadline) { throw 'Small motions must preserve the activity and not restart the detail interval' }
     }
+    Set-Pose 0 -Immediate
+    $restNow=$script:clock.Elapsed.TotalSeconds
+    $script:nextRest=$restNow+900; $script:quietUntil=$restNow+900
+    Set-Pose 1 -Immediate
+    $sideDelay=$script:nextRest-$restNow
+    if ($sideDelay -lt 25 -or $sideDelay -gt 56 -or $script:quietUntil -gt $script:nextRest) { throw 'Previous activity cooldown starved the early side-rest pose' }
+    Set-Pose 3 -Immediate
     Start-Rest 700
     React-ToPoke 700.2
     if ($null -ne $script:rest -or $restBlend.Visibility -ne 'Hidden') { throw 'Poke must interrupt resting' }
@@ -845,7 +864,7 @@ if ($SelfTest) {
     React-ToPoke 1000
     Start-Rest 1003
     Update-Rest 1005
-    if ($script:mode -ne 2 -or $script:nextChange -ne $sleepDeadline) { throw 'Poke and repositioning must preserve sleep' }
+    if ($script:mode -ne 2 -or $script:nextChange -lt $sleepDeadline) { throw 'Poke and repositioning must preserve sleep' }
     Stop-Rest 1100
     $script:roamEnabled=$true; $script:nextRoam=0; $script:nextBack=0; $script:quietUntil=0
     $SelfTest=$false

@@ -4,6 +4,14 @@ $script:previousActivity=-1
 function Get-ActivitySeconds([int]$mode) {
  return $script:rng.Next(120,241)
 }
+function Get-RestHoldSeconds([int]$mode) {
+ if ($mode -in @(1,2)) { return $script:rng.Next(120,211) }
+ return 4.0
+}
+function Get-FirstRestDelay([int]$mode) {
+ if ($mode -in @(1,2)) { return $script:rng.Next(25,56) }
+ return $script:rng.Next(120,241)
+}
 function Get-NextActivityMode([int]$mode,[int]$previous,[int]$roll) {
  if ($mode -eq 2) { return 1 }
  $choices=@(0..3 | Where-Object { $_ -ne $mode -and $_ -ne $previous })
