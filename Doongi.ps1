@@ -550,6 +550,7 @@ Add-Menu '릴스 찍기' { $script:motion=$true; Start-CameraScene 'reels' $scri
 Add-Menu '담배 뻑뻑 피우기' { $script:motion=$true; Start-CameraScene 'smoke' $script:clock.Elapsed.TotalSeconds }
 Add-Menu '머리카락으로 하트 만들기' { $script:motion=$true; Start-CameraScene 'hairHeart' $script:clock.Elapsed.TotalSeconds }
 Add-Menu '불닭 먹기' { $script:motion=$true; Start-CameraScene 'noodles' $script:clock.Elapsed.TotalSeconds }
+Add-Menu '응아 하기' { $script:motion=$true; Start-CameraScene 'potty' $script:clock.Elapsed.TotalSeconds }
 $script:chaosMenu=New-Object Windows.Controls.MenuItem
 $script:chaosMenu.Header='야랄 모드 · 3초마다 난리 나기'
 $script:chaosMenu.IsCheckable=$true
@@ -967,6 +968,8 @@ if ($SelfTest) {
     Invoke-HairHeartSelfTest
     . (Join-Path $PSScriptRoot 'Noodles.Tests.ps1')
     Invoke-NoodlesSelfTest
+    . (Join-Path $PSScriptRoot 'Potty.Tests.ps1')
+    Invoke-PottySelfTest
     . (Join-Path $PSScriptRoot 'Extras.Tests.ps1')
     Invoke-ExtrasSelfTest
     . (Join-Path $PSScriptRoot 'PomodoroStore.Tests.ps1')
