@@ -12,7 +12,7 @@ $script:extraLines.selfie=@('잠깐. 사진 한 장만.', '이쪽으로 찍어�
 $script:extraLines.reels=@('한 번만 찍어볼게.', '이거 올릴까 말까.', '잠깐. 박자 쫌 세고.', '이번엔 안 틀릴게.', '아 다시. 박자 놓쳤어.', '찍고 확인해보자.')
 $script:extraLines.selfiePoke=@('잠깐. 나 지금 눈 감았어. 다시.', '구경만 하지 말고 찍어줘.', '아 사진에 손 나와.', '이쪽 말고 반대쪽에서.', '잠깐. 아직 안 찍었어.', '잘 나왔나 봐줘.')
 $script:extraLines.reelsPoke=@('아 언제부터 봤어.', '아 쫌. 찍고 있잖아.', '웃지 마. 박자 세는 중이야.', '방금 건 다시 찍을 거야.', '잠깐. 여기부터 다시.', '볼 거면 박수라도 쳐줘.')
-$script:extraLines.repeatPoke=@('알았어. 보고 있잖아.', '아 쫌. 간지러.', '왜 자꾸 불러.', '할 말 생각하고 눌러.', '응. 아직 여기 있어.', '잠깐. 하나씩 말해.')
+$script:extraLines.repeatPoke=@('알았어. 보고 있잖아.', '아 쫌. 간지러.', '왜 자꾸 불러.', '할 말 생각하고 눌러.', '응. 아직 여기 있어.', '잠깐. 하나씩 말해.', '나 좀 그만 좋아해.', '그만 쳐다봐.', '알았어. 나도 너 봤어.')
 
 $cameraBitmap=[Windows.Media.Imaging.BitmapImage]::new()
 $cameraBitmap.BeginInit()
