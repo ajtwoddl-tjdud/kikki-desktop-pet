@@ -167,9 +167,13 @@ function Update-Roam([double]$t) {
         $script:pet.Source=$script:stretchSprite
         $transforms[0].ScaleY=1+0.025*[Math]::Sin($elapsed/1.1*[Math]::PI)
     } elseif ($walkTime -lt $script:roam.seconds) {
-        $total=[Math]::Abs($script:roam.toX-$script:roam.fromX)
+        $total=if ($null -ne $script:roam.route) {$script:roam.route.length} else {[Math]::Abs($script:roam.toX-$script:roam.fromX)}
         $travel=Get-WalkDistance $walkTime $total $script:roam.seconds
-        $script:window.Left=$script:roam.fromX+$script:roam.direction*$travel
+        if ($null -ne $script:roam.route) {
+            $point=Get-RoutePosition $script:roam.route $travel
+            $script:window.Left=$point.x; $script:window.Top=$point.y
+            if ($point.direction -ne 0) { $script:roam.direction=$point.direction }
+        } else { $script:window.Left=$script:roam.fromX+$script:roam.direction*$travel }
         # Distance drives the gait, including the gentle start and stop.
         $phase=($travel/56)%1
         $frameIndex=[int][Math]::Floor($phase*8)
@@ -182,11 +186,13 @@ function Update-Roam([double]$t) {
         $script:roam.strideAngle=$transforms[1].Angle
     } elseif ($walkTime -lt $script:roam.seconds+0.8) {
         $script:window.Left=$script:roam.toX
+        if ($null -ne $script:roam.route) { $script:window.Top=$script:roam.toY }
         $script:pet.Source=$script:settleSprite
         $settle=($walkTime-$script:roam.seconds)/0.8
         $transforms[0].ScaleY=1-0.018*[Math]::Sin($settle*[Math]::PI)
     } else {
         $script:window.Left=$script:roam.toX
+        if ($null -ne $script:roam.route) { $script:window.Top=$script:roam.toY }
         Stop-Roam $t ($script:rng.Next(120,241))
 
     }

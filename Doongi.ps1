@@ -955,15 +955,20 @@ if ($SelfTest) {
     Invoke-SmokingSelfTest
     . (Join-Path $PSScriptRoot 'Extras.Tests.ps1')
     Invoke-ExtrasSelfTest
+    . (Join-Path $PSScriptRoot 'PomodoroStore.Tests.ps1')
+    Invoke-PomodoroStoreSelfTest
     $window.Close()
     exit 0
 }
-Say-Random 'hello'
+[void](Read-PomodoroState)
+Update-Pomodoro
+if ($script:pendingPomoNotice -and -not $script:pendingCymbals) { Request-Cymbals $script:pendingPomoNotice }
+if ($null -ne $script:pomodoro -and -not $script:pendingPomoNotice) { Say (Get-PomodoroRemaining) } else { Say-Random 'hello' }
 if ($null -ne $script:toggleEvent) {
     $context=[Windows.Threading.DispatcherSynchronizationContext]::new($window.Dispatcher)
     $script:visibilityWatcher=[KikkiEventWatcher]::new($script:toggleEvent,$context,[Action]{ Toggle-PetVisibility })
 }
-$window.Add_Loaded({ Sync-PetTimers })
+$window.Add_Loaded({ Present-PomodoroNotice; Try-StartCymbals; Sync-PetTimers })
 $script:app=[Windows.Application]::new()
 $script:app.ShutdownMode=[Windows.ShutdownMode]::OnMainWindowClose
 try { [void]$script:app.Run($window) }

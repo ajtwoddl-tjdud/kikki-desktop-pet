@@ -1,6 +1,7 @@
 ﻿# Independent minute-scale clocks keep activity changes from postponing walks and details.
 $script:quietUntil=0.0
 $script:previousActivity=-1
+. (Join-Path $PSScriptRoot 'Routes.ps1')
 function Get-ActivitySeconds([int]$mode) {
  return $script:rng.Next(120,241)
 }

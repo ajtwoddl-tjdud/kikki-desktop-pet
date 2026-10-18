@@ -45,11 +45,14 @@
   }
   if ($action -eq 'run') {
    if ($null -eq $script:roam) { throw 'Chaos never started a crossing' }
-   $target=$script:roam.toX; $start=$script:window.Left
+   $target=$script:roam.toX; $targetY=$script:roam.toY; $start=$script:window.Left; $startY=$script:window.Top
+   if ($null -eq $script:roam.route -or $script:roam.route.points.Count -lt 5) { throw 'Chaos walk has no turns' }
    Update-Roam ($t+1.5)
    if ($script:window.Left -eq $start -or $script:window.Left -eq $target) { throw 'Crossing teleported instead of walking' }
+   if ([Math]::Abs($script:window.Top-$startY) -lt 1) { throw 'Chaos walk remained a horizontal line' }
    Update-Roam ($t+3)
    if ([Math]::Abs($script:window.Left-$target) -gt 0.01) { throw 'Chaos did not reach the screen edge' }
+   if ([Math]::Abs($script:window.Top-$targetY) -gt 1.0) { throw 'Chaos did not return to its visible destination' }
   }
   $t+=10
  }
@@ -57,6 +60,14 @@
  Update-Chaos ($t+10)
  if ($script:chaosNext -le $t+10) { throw 'Chaos kept a backlog while held' }
  $script:pressed=$false
+ Start-ChaosAction 'run' 90000
+ Update-Roam 90000.6
+ $routeBeforeClick=$script:roam.route
+ React-ToPoke 90000.6
+ Update-Chaos 90003
+ if ($null -eq $script:roam -or -not [Object]::ReferenceEquals($routeBeforeClick,$script:roam.route)) { throw 'Clicked chaos walk was cut off before it returned' }
+ Update-Chaos 90004.1
+ if ($null -ne $script:roam -and [Object]::ReferenceEquals($routeBeforeClick,$script:roam.route)) { throw 'Chaos route never resumed after its glance' }
  Start-ChaosAction 'sleep' $t
  Start-PostureTransition 0 2 $t $script:sprites[0]
  Render-PostureTransition ($t+0.2)

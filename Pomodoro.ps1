@@ -2,6 +2,7 @@
 $script:pomoSettings=@{focus=25;rest=5;rounds=4}
 $script:pendingPomoNotice=$null
 $script:pendingPoke=$null
+. (Join-Path $PSScriptRoot 'PomodoroStore.ps1')
 $script:pomoTimer=New-Object Windows.Threading.DispatcherTimer
 $script:pomoTimer.Add_Tick({
  $script:pomoTimer.Stop()
@@ -23,6 +24,7 @@ function Start-Pomodoro([int]$Focus,[int]$Rest,[int]$Rounds,[datetime]$Now=[Date
  $script:pomodoro=@{phase='focus';round=1;rounds=$Rounds;focusSeconds=$Focus*60;restSeconds=$Rest*60;deadline=$Now.AddMinutes($Focus);paused=$false;remaining=0.0}
  $script:classEnd=$null; $script:pendingClassEnd=$false
  $script:pendingPomoNotice=$null
+ [void](Save-PomodoroState)
  Say ('집중 {0}분. 끝나면 불러줄게.' -f $Focus)
  Sync-PomodoroTimer
  if ($null -ne $script:classTimer) { Sync-PetTimers }
@@ -30,6 +32,7 @@ function Start-Pomodoro([int]$Focus,[int]$Rest,[int]$Rounds,[datetime]$Now=[Date
 function Stop-Pomodoro([switch]$Quiet) {
  Stop-Cymbals
  $script:pomodoro=$null; $script:pendingPomoNotice=$null; $script:pendingPoke=$null
+ [void](Save-PomodoroState)
  Sync-PomodoroTimer
  if (-not $Quiet) { Say '타이머 껐어. 쪼끔 쉬자.' }
 }
@@ -54,12 +57,14 @@ function Toggle-PomodoroPause([datetime]$Now=[DateTime]::UtcNow) {
   $p.remaining=[Math]::Max(0.0,($p.deadline-$Now).TotalSeconds); $p.paused=$true
   Say (Get-PomodoroRemaining $Now)
  }
+ [void](Save-PomodoroState)
  Sync-PomodoroTimer
 }
 function Present-PomodoroNotice {
  if ($null -ne $script:pendingPomoNotice -and $script:window.IsVisible) {
   $notice=$script:pendingPomoNotice; $script:pendingPomoNotice=$null
   Say $notice; $script:bubbleUntil=[DateTime]::Now.AddSeconds(10)
+  [void](Save-PomodoroState)
  }
 }
 function Update-Pomodoro([datetime]$Now=[DateTime]::UtcNow) {
@@ -84,6 +89,7 @@ function Update-Pomodoro([datetime]$Now=[DateTime]::UtcNow) {
   $script:pendingPomoNotice=$notice
   Present-PomodoroNotice
   Request-Cymbals $notice
+  [void](Save-PomodoroState)
   Sync-PomodoroTimer
  }
 }

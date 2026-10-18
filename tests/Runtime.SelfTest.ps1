@@ -105,6 +105,26 @@ Assert ((Get-WalkDestination 988 12 988 $true 300) -eq 12) 'Right-edge walk stop
 Assert ((Get-WalkDestination 12 12 988 $true -300) -eq 988) 'Left-edge walk stopped short'
 Assert ((Get-WalkDestination -1200 -1500 -300 $true 300) -eq -300) 'Negative-coordinate display crossing failed'
 Assert ((Get-WalkDestination 20 12 10 $true 300) -eq 12) 'Narrow display destination escaped bounds'
+foreach ($layout in @(@(0,0,1400,700),@(-1900,-100, -500,600),@(0,0,0,400))) {
+ foreach ($shape in 0..2) {
+  $route=New-ChaosRoute $layout[0] $layout[3] $layout[0] $layout[1] $layout[2] $layout[3] 232 $shape
+  $first=Get-RoutePosition $route 0
+  $last=Get-RoutePosition $route $route.length
+  Assert ($first.x -eq $layout[0] -and $first.y -eq $layout[3]) 'Chaos route teleported at its start'
+  Assert ($last.x -ge $layout[0]-0.01 -and $last.x -le $layout[2]+0.01 -and $last.y -ge $layout[1]-0.01 -and $last.y -le $layout[3]+0.01) 'Chaos route did not return to the screen'
+  Assert ($route.points.Count -gt 5 -and $route.length -gt 0) 'Chaos route lost its rounded turns'
+  $previous=$first; $outside=$false
+  foreach ($step in 1..100) {
+   $point=Get-RoutePosition $route ($route.length*$step/100)
+   $jump=[Math]::Sqrt([Math]::Pow($point.x-$previous.x,2)+[Math]::Pow($point.y-$previous.y,2))
+   Assert ($jump -le $route.length/100+0.01) 'Chaos route jumped at a corner'
+   Assert ($point.y -ge $layout[1]-0.01 -and $point.y -le $layout[3]+0.01) 'Chaos route escaped vertically'
+   if ($point.x -lt $layout[0] -or $point.x -gt $layout[2]) { $outside=$true }
+   $previous=$point
+  }
+  if ($shape -eq 1) { Assert $outside 'Off-screen detour never left the screen' }
+ }
+}
 $script:motion=$true; $script:mode=1; $script:auto=$true
 $script:roamEnabled=$false; $script:quietUntil=0
 $script:nextRest=0; $script:nextDrop=-1; $script:nextExpression=-2; $script:nextBack=-3

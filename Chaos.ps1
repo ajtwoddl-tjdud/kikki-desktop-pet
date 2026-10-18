@@ -125,11 +125,11 @@ function Start-ChaosAction([string]$action,[double]$t) {
   'smoke' { Start-CameraScene 'smoke' $t }
   'run' {
    $script:roamEnabled=$true
-   Start-Roam $t -Across
-   if ($null -ne $script:roam) {
-    # Use the full three seconds to travel, including the usual smooth easing.
-    $script:roam.start=$t-1.1; $script:roam.seconds=3.0
-   }
+   Keep-OnScreen
+   $area=[Windows.SystemParameters]::WorkArea
+   $route=New-ChaosRoute $script:window.Left $script:window.Top $area.Left $area.Top ($area.Right-$script:window.Width) ($area.Bottom-$script:window.Height) $script:window.Width
+   $point=Get-RoutePosition $route 0
+   $script:roam=@{start=$t-1.1;fromX=$script:window.Left;toX=$route.endX;toY=$route.endY;route=$route;seconds=3.0;direction=$(if ($point.direction -ne 0) {$point.direction} else {1});crossing=$true;pausedAt=$null;pauseUntil=0.0;frameIndex=0;strideY=0.0;strideAngle=0.0}
    Say '나 저쪽 갔다 올게.'
   }
   'banana' { Set-Pose 0 -Immediate; Say-Random }
@@ -150,6 +150,7 @@ function Set-ChaosEnabled([bool]$enabled,[switch]$Quiet) {
   Start-ChaosAction (Get-NextChaosAction) $t
  } else {
   $script:chaosEnabled=$false
+  Keep-OnScreen
   $saved=$script:chaosSaved
   $script:cameraScene=$null; $script:pokeScene=$null; $script:pendingPoke=$null
   Set-Pose $saved.mode -Immediate
@@ -170,7 +171,10 @@ function Update-Chaos([double]$t) {
  }
  if ($t -lt $script:chaosNext) { return }
  # Finish a crossing exactly at the edge before starting the next action.
- if ($null -ne $script:roam) { Update-Roam $t }
+ if ($null -ne $script:roam) {
+  Update-Roam $t
+  if ($null -ne $script:roam -and ($null -ne $script:roam.pausedAt -or $t-$script:roam.start-1.1 -lt $script:roam.seconds)) { return }
+ }
  Start-ChaosAction (Get-NextChaosAction) $t
 }
 function Start-RepeatPoke([double]$t) {
