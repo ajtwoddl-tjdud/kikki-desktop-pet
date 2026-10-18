@@ -64,6 +64,8 @@ function Start-Rest([double]$t) {
  $script:rest=@{start=$t;mode=$script:mode;first=$first;hold=$hold;stage=-1;lastSource=$script:pet.Source;previous=$script:pet.Source;changed=$t}
  $script:rest.stretchAt=$t+$script:rng.Next(45,91)
  $script:rest.stretchStart=$null
+ $script:rest.detailKind=@('stretch','giveUp')[$script:rng.Next(2)]
+ $script:rest.giveUpSpoken=$false
  # Count from the last small action, not after its long-held pose finishes.
  $script:nextRest=$t+$script:rng.Next(120,241)
  if ($script:mode -eq 3) {
@@ -84,14 +86,27 @@ function Update-Rest([double]$t) {
  $stage=if ($age -lt 0.9) { 0 } elseif ($age -lt $script:rest.hold) { 1 } else { 2 }
  $target=if ($stage -eq 2) { $script:sprites[$script:mode] } else { $script:restSprites[$script:rest.first+$stage] }
  if ($script:mode -eq 2 -and $stage -eq 1) {
-  if ($null -eq $script:rest.stretchStart -and $t -ge $script:rest.stretchAt -and $age -lt $script:rest.hold-5) {
+  if ($null -eq $script:rest.stretchStart -and $t -ge $script:rest.stretchAt -and $age -lt $script:rest.hold-7) {
    $script:rest.stretchStart=$t
    $script:rest.stretchAt=$t+$script:rng.Next(90,151)
   }
   if ($null -ne $script:rest.stretchStart -and $t -ge $script:rest.stretchStart) {
    $stretchAge=$t-$script:rest.stretchStart
-   if ($stretchAge -lt 3.8) { $target=$script:extraSprites[(Get-LyingStretchFrame $stretchAge)] }
-   else { $script:rest.stretchStart=$null }
+   $duration=if ($script:rest.detailKind -eq 'giveUp') { 5.5 } else { 3.8 }
+   if ($stretchAge -lt $duration) {
+    if ($script:rest.detailKind -eq 'giveUp') {
+     $target=$script:transitionSprites[(Get-GetUpGiveUpFrame $stretchAge)]
+     if ($stretchAge -ge 2.15 -and -not $script:rest.giveUpSpoken) {
+      Say '아 몸 무거워.'
+      $script:bubbleUntil=[DateTime]::Now.AddSeconds(2.5)
+      $script:rest.giveUpSpoken=$true
+     }
+    } else { $target=$script:extraSprites[(Get-LyingStretchFrame $stretchAge)] }
+   } else {
+    $script:rest.stretchStart=$null
+    $script:rest.detailKind=@('stretch','giveUp')[$script:rng.Next(2)]
+    $script:rest.giveUpSpoken=$false
+   }
   }
  }
  if ($script:mode -eq 3 -and $stage -ne 2) { $target=$script:rest.gameSource }
@@ -110,4 +125,11 @@ function Update-Rest([double]$t) {
   $shift=[Math]::Sin([Math]::Min(1.0,$age/$script:rest.hold)*[Math]::PI)
   $transforms[1].Angle=0.7*$shift; $transforms[2].X=0.8*$shift
  }
+}
+function Get-GetUpGiveUpFrame([double]$age) {
+ # Wake, plant a hand, push halfway up, hesitate, then retrace the supported descent.
+ $ends=@(0.25,0.5,0.75,1.05,1.4,1.75,2.15,3.4,3.7,4.0,4.3,4.6,4.9,5.15,5.5)
+ $frames=@(11,10,9,8,7,4,3,2,3,4,7,8,9,10,11)
+ for ($i=0;$i -lt $ends.Count;$i++) { if ($age -lt $ends[$i]) { return $frames[$i] } }
+ return 11
 }

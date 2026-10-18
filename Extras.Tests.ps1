@@ -54,6 +54,7 @@
   Start-Rest $t
   $hold=$script:rest.hold; $deadline=$script:nextChange
   $script:rest.stretchAt=$t+50
+  $script:rest.detailKind='stretch'
   Update-Rest ($t+50)
   foreach ($age in @(0.3,0.9,1.8,3.1)) {
    Update-Rest ($t+50+$age)
@@ -64,6 +65,31 @@
   $expected=$script:restSprites[@(3,1)[$mode-1]]
   if (-not [Object]::ReferenceEquals($pet.Source,$expected)) { throw 'Stretch did not return to the side-lying pose' }
  }
+ # Giving up midway uses the same long rest and never resets the active timer.
+ Set-Pose 2 -Immediate; Start-Rest 50000
+ $script:rest.detailKind='giveUp'; $script:rest.stretchAt=50001
+ $hold=$script:rest.hold; $deadline=$script:nextChange
+ Start-Pomodoro 25 5 4 $now
+ $pomoDeadline=$script:pomodoro.deadline
+ Update-Rest 50001
+ $samples=@(0.1,0.3,0.6,0.9,1.2,1.5,1.9,2.4,3.5,3.8,4.1,4.4,4.7,5.0,5.3)
+ $expectedFrames=@(11,10,9,8,7,4,3,2,3,4,7,8,9,10,11)
+ for ($i=0;$i -lt $samples.Count;$i++) {
+  Update-Rest (50001+$samples[$i])
+  if (-not [Object]::ReferenceEquals($pet.Source,$script:transitionSprites[$expectedFrames[$i]])) { throw 'Get-up attempt skipped its hand support, hesitation or descent' }
+  if ($i -eq 7) {
+   if ($script:words.Text -ne '아 몸 무거워.' -or -not $script:rest.giveUpSpoken) { throw 'Get-up hesitation line missing' }
+   $script:words.Text='one-shot marker'
+  }
+  if ($i -gt 7 -and $script:words.Text -ne 'one-shot marker') { throw 'Get-up line repeated on every frame' }
+ }
+ Update-Rest 50006.6
+ if ($null -eq $script:rest -or $null -ne $script:rest.stretchStart -or $script:rest.hold -ne $hold -or $script:nextChange -ne $deadline -or $script:mode -ne 2 -or $script:pomodoro.deadline -ne $pomoDeadline) { throw 'Giving up replaced the rest or reset the Pomodoro' }
+ if (-not [Object]::ReferenceEquals($pet.Source,$script:restSprites[1])) { throw 'Giving up did not return to side rest' }
+ $script:rest.detailKind='giveUp'; $script:rest.stretchStart=50010
+ $script:pressed=$true; Update-Rest 50011; $script:pressed=$false
+ if ($null -ne $script:rest) { throw 'Get-up attempt ignored a user interruption' }
+ Stop-Pomodoro -Quiet
  Set-Pose 1 -Immediate; Start-Rest $t
  $script:rest.stretchAt=$t+1
  Update-Rest ($t+2)
@@ -82,5 +108,5 @@
  }
  Stop-Rest $t
  Set-Pose 1 -Immediate
- Write-Output 'PASS: cymbals on focus/break/final completion; no duplicate, paused, cancelled or catch-up bursts; hidden deferral and frozen activity; lying stretch and return; PCM audio.'
+ Write-Output 'PASS: cymbals on focus/break/final completion; no duplicate, paused, cancelled or catch-up bursts; hidden deferral and frozen activity; lying stretch; supported get-up/hesitation/give-up, one-shot speech, rest/timer preservation and interruption; PCM audio.'
 }

@@ -559,7 +559,12 @@ Add-Menu '누워서 자세 고치기' { $script:motion=$true; $script:auto=$fals
 Add-Menu '누워서 스트레칭' {
     $script:motion=$true; Set-Pose 2 -Immediate
     $t=$script:clock.Elapsed.TotalSeconds; Start-Rest $t
-    if ($null -ne $script:rest) { $script:rest.stretchStart=$t+0.9 }
+    if ($null -ne $script:rest) { $script:rest.detailKind='stretch'; $script:rest.stretchStart=$t+0.9 }
+}
+Add-Menu '일어나다 다시 눕기' {
+    $script:motion=$true; Set-Pose 2 -Immediate
+    $t=$script:clock.Elapsed.TotalSeconds; Start-Rest $t
+    if ($null -ne $script:rest) { $script:rest.detailKind='giveUp'; $script:rest.stretchStart=$t+0.9 }
 }
 Add-Menu '바나나 한 입 먹기' { $script:motion=$true; Set-Pose 0 -Immediate; Start-Rest $script:clock.Elapsed.TotalSeconds }
 Add-Menu '게임하기' { $script:auto=$false; Set-Pose 3; Say-Random }
@@ -813,6 +818,7 @@ if ($SelfTest) {
         Set-Pose $i
         $activityDeadline=$script:nextChange
         Start-Rest 600
+        $script:rest.detailKind='stretch'
         if ($null -eq $script:rest) { throw 'Rest action missing' }
         if ($script:nextChange -lt $activityDeadline) { throw 'Side resting shortened the activity' }
         $activityDeadline=$script:nextChange
