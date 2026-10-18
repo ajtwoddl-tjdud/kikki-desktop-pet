@@ -62,6 +62,8 @@ function Start-Rest([double]$t) {
  if (-not $script:motion -or $null -ne $script:rest -or $null -ne $script:roam -or $null -ne $script:dropStart -or $script:pressed -or $script:dragging -or $t -lt $script:attentionEnd) { return }
  $first=@(4,2,0,0)[$script:mode]; $hold=Get-RestHoldSeconds $script:mode
  $script:rest=@{start=$t;mode=$script:mode;first=$first;hold=$hold;stage=-1;lastSource=$script:pet.Source;previous=$script:pet.Source;changed=$t}
+ $script:rest.stretchAt=$t+$script:rng.Next(45,91)
+ $script:rest.stretchStart=$null
  # Count from the last small action, not after its long-held pose finishes.
  $script:nextRest=$t+$script:rng.Next(120,241)
  if ($script:mode -eq 3) {
@@ -81,8 +83,19 @@ function Update-Rest([double]$t) {
  if ($age -ge $script:rest.hold+0.3) { Stop-Rest $t -Completed; return }
  $stage=if ($age -lt 0.9) { 0 } elseif ($age -lt $script:rest.hold) { 1 } else { 2 }
  $target=if ($stage -eq 2) { $script:sprites[$script:mode] } else { $script:restSprites[$script:rest.first+$stage] }
+ if ($script:mode -eq 2 -and $stage -eq 1) {
+  if ($null -eq $script:rest.stretchStart -and $t -ge $script:rest.stretchAt -and $age -lt $script:rest.hold-5) {
+   $script:rest.stretchStart=$t
+   $script:rest.stretchAt=$t+$script:rng.Next(90,151)
+  }
+  if ($null -ne $script:rest.stretchStart -and $t -ge $script:rest.stretchStart) {
+   $stretchAge=$t-$script:rest.stretchStart
+   if ($stretchAge -lt 3.8) { $target=$script:extraSprites[(Get-LyingStretchFrame $stretchAge)] }
+   else { $script:rest.stretchStart=$null }
+  }
+ }
  if ($script:mode -eq 3 -and $stage -ne 2) { $target=$script:rest.gameSource }
- if ($stage -ne $script:rest.stage) {
+ if ($stage -ne $script:rest.stage -or -not [Object]::ReferenceEquals($target,$script:rest.lastSource)) {
   $script:rest.previous=$script:rest.lastSource; $script:rest.stage=$stage; $script:rest.changed=$t
  }
  $script:rest.lastSource=$target; $script:pet.Source=$target

@@ -482,6 +482,7 @@ function Keep-OnScreen {
 . (Join-Path $PSScriptRoot 'Runtime.ps1')
 . (Join-Path $PSScriptRoot 'Pomodoro.ps1')
 . (Join-Path $PSScriptRoot 'Chaos.ps1')
+. (Join-Path $PSScriptRoot 'Extras.ps1')
 Set-Pose 1 -Immediate
 $area = [System.Windows.SystemParameters]::WorkArea
 $window.Left = $area.Right - $window.Width - 24
@@ -493,6 +494,7 @@ $pet.Add_MouseEnter({
     if ($t-$script:lastHover -gt 90 -and $t -ge $script:nextExpression -and $script:rng.Next(4) -eq 0) { Play-Expression $t; $script:lastHover=$t }
 })
 $pet.Add_MouseLeftButtonDown({
+    Stop-Cymbals
     $script:pendingPoke=$null
     $script:poseTransition=$null
     Stop-Rest $script:clock.Elapsed.TotalSeconds
@@ -531,6 +533,7 @@ function Add-Menu([string]$label, [scriptblock]$action) {
     $item.Header = $label
     $item.Add_Click({
         param($sender,$eventArgs)
+        if ([string]$sender.Header -notmatch '^뽀모도로') { Stop-Cymbals }
         if ($script:chaosEnabled -and [string]$sender.Header -notmatch '^(뽀모도로|크기 바꾸기|끼끼 퇴근)') { Set-ChaosEnabled $false -Quiet }
         if ([string]$sender.Header -notmatch '^(뽀모도로|크기 바꾸기)') { $script:cameraScene=$null; $script:pokeScene=$null }
     })
@@ -551,6 +554,11 @@ $script:chaosMenu.Add_Click({ Set-ChaosEnabled (-not $script:chaosEnabled); Sync
 Add-Menu '폰 보다가 꾸벅…' { $script:auto=$false; $script:motion=$true; Set-Pose 1 -Immediate; Start-PhoneDrop $script:clock.Elapsed.TotalSeconds }
 Add-Menu '낮잠 자기' { $script:auto=$false; Set-Pose 2; Say-Random }
 Add-Menu '누워서 자세 고치기' { $script:motion=$true; $script:auto=$false; Set-Pose 2 -Immediate; Start-Rest $script:clock.Elapsed.TotalSeconds }
+Add-Menu '누워서 스트레칭' {
+    $script:motion=$true; Set-Pose 2 -Immediate
+    $t=$script:clock.Elapsed.TotalSeconds; Start-Rest $t
+    if ($null -ne $script:rest) { $script:rest.stretchStart=$t+0.9 }
+}
 Add-Menu '바나나 한 입 먹기' { $script:motion=$true; Set-Pose 0 -Immediate; Start-Rest $script:clock.Elapsed.TotalSeconds }
 Add-Menu '게임하기' { $script:auto=$false; Set-Pose 3; Say-Random }
 Add-Menu '등 돌리고 쉬기' { Start-BackTurn $script:clock.Elapsed.TotalSeconds }
@@ -594,6 +602,16 @@ Add-Menu '뽀모도로 남은 시간' {
 }
 Add-Menu '뽀모도로 일시정지 / 계속' { Toggle-PomodoroPause }
 Add-Menu '뽀모도로 끝내기' { Stop-Pomodoro }
+Add-Menu '심벌즈 쳐봐' { Say '자. 들었지?'; Request-Cymbals }
+$script:cymbalSoundMenu=New-Object Windows.Controls.MenuItem
+$script:cymbalSoundMenu.Header='뽀모도로 심벌즈 소리'
+$script:cymbalSoundMenu.IsCheckable=$true; $script:cymbalSoundMenu.IsChecked=$script:cymbalSound
+$script:cymbalSoundMenu.Add_Click({
+    $script:cymbalSound=-not $script:cymbalSound
+    $script:cymbalSoundMenu.IsChecked=$script:cymbalSound
+    if (-not $script:cymbalSound -and $null -ne $script:cymbalPlayer) { $script:cymbalPlayer.Stop() }
+})
+[void]$menu.Items.Add($script:cymbalSoundMenu)
 [void]$menu.Items.Add((New-Object Windows.Controls.Separator))
 Add-Menu '크기 바꾸기 · 작게 / 크게' {
     Stop-Roam $script:clock.Elapsed.TotalSeconds
@@ -612,6 +630,7 @@ function Toggle-PetVisibility {
         $script:pet.ContextMenu.IsOpen=$false
         $script:hiddenAt=[DateTime]::Now
         $script:clock.Stop()
+        if ($null -ne $script:cymbalScene) { $script:cymbalScene.clock.Stop(); if ($null -ne $script:cymbalPlayer) { $script:cymbalPlayer.Stop() } }
         $script:window.Hide()
         [Console]::WriteLine('VISIBILITY: hidden')
     } else {
@@ -621,8 +640,9 @@ function Toggle-PetVisibility {
         $script:hiddenAt=$null
         $script:window.ShowActivated=$false
         $script:window.Show()
-        $script:clock.Start()
+        if ($null -ne $script:cymbalScene) { $script:cymbalScene.clock.Start() } else { $script:clock.Start() }
         Present-PomodoroNotice
+        Try-StartCymbals
         if ($script:pendingClassEnd) {
             Say-Random 'classEnd'
             $script:bubbleUntil=[DateTime]::Now.AddSeconds(12)
@@ -641,6 +661,8 @@ $timer.Add_Tick({
     Update-PokeFollowup
     if ($script:window.IsVisible) {
         $script:tick++
+        Try-StartCymbals
+        if ($null -ne $script:cymbalScene) { Render-Cymbals } else {
         Update-Chaos $script:clock.Elapsed.TotalSeconds
         if (-not $SelfTest -and (Get-DueDetail $script:clock.Elapsed.TotalSeconds) -eq 'camera' -and -not $script:pet.ContextMenu.IsOpen) {
             Start-CameraScene (@('selfie','reels')[$script:rng.Next(2)]) $script:clock.Elapsed.TotalSeconds
@@ -659,6 +681,7 @@ $timer.Add_Tick({
             Continue-Life
 
         }
+        }
     }
     Complete-ClassTimer
     Sync-PetTimers
@@ -671,6 +694,7 @@ $script:classTimer.Add_Tick({
     Sync-PetTimers
 })
 $window.Add_Closed({
+    if ($null -ne $script:cymbalPlayer) { $script:cymbalPlayer.Stop(); $script:cymbalPlayer.Dispose() }
     $script:timer.Stop()
     $script:classTimer.Stop()
     $script:pomoTimer.Stop()
@@ -797,7 +821,8 @@ if ($SelfTest) {
         if (-not [Object]::ReferenceEquals($pet.Source,$expectedSource)) { throw 'Rest pose incorrect' }
         if ($i -in @(1,2)) {
             Update-Rest 660
-            if ($null -eq $script:rest -or -not [Object]::ReferenceEquals($pet.Source,$expectedSource)) { throw 'Side pose did not remain visible for a full minute' }
+            $lyingStretch=@($script:extraSprites[4..7] | Where-Object { [Object]::ReferenceEquals($pet.Source,$_) }).Count -gt 0
+            if ($null -eq $script:rest -or (-not [Object]::ReferenceEquals($pet.Source,$expectedSource) -and -not $lyingStretch)) { throw 'Side pose did not remain visible for a full minute' }
         }
         Update-Rest (600+$script:rest.hold+1)
         if ($null -ne $script:rest -or $pet.Opacity -ne 1) { throw 'Rest action failed to finish' }
@@ -923,6 +948,8 @@ if ($SelfTest) {
     Write-Output ('PASS: 78 sprites; upward lift/wriggle/release; four-stage hand pickup; rest/eat/phone poses and interruption; aligned eight-frame gait; distance easing; expressions; phone drop; quiet poke; roam/stretch/bounds/settle/cancel/disable; WPF layout; {0} menu entries.' -f $menu.Items.Count)
     . (Join-Path $PSScriptRoot 'Chaos.Tests.ps1')
     Invoke-ChaosSelfTest
+    . (Join-Path $PSScriptRoot 'Extras.Tests.ps1')
+    Invoke-ExtrasSelfTest
     $window.Close()
     exit 0
 }

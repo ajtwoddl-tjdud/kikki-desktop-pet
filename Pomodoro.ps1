@@ -18,6 +18,7 @@ function Sync-PomodoroTimer {
 }
 function Start-Pomodoro([int]$Focus,[int]$Rest,[int]$Rounds,[datetime]$Now=[DateTime]::UtcNow) {
  if ($Focus -lt 1 -or $Focus -gt 240 -or $Rest -lt 1 -or $Rest -gt 120 -or $Rounds -lt 1 -or $Rounds -gt 12) { throw 'Invalid Pomodoro settings' }
+ Stop-Cymbals
  $script:pomoSettings=@{focus=$Focus;rest=$Rest;rounds=$Rounds}
  $script:pomodoro=@{phase='focus';round=1;rounds=$Rounds;focusSeconds=$Focus*60;restSeconds=$Rest*60;deadline=$Now.AddMinutes($Focus);paused=$false;remaining=0.0}
  $script:classEnd=$null; $script:pendingClassEnd=$false
@@ -27,6 +28,7 @@ function Start-Pomodoro([int]$Focus,[int]$Rest,[int]$Rounds,[datetime]$Now=[Date
  if ($null -ne $script:classTimer) { Sync-PetTimers }
 }
 function Stop-Pomodoro([switch]$Quiet) {
+ Stop-Cymbals
  $script:pomodoro=$null; $script:pendingPomoNotice=$null; $script:pendingPoke=$null
  Sync-PomodoroTimer
  if (-not $Quiet) { Say '타이머 껐어. 쪼끔 쉬자.' }
@@ -81,6 +83,7 @@ function Update-Pomodoro([datetime]$Now=[DateTime]::UtcNow) {
  if ($null -ne $notice) {
   $script:pendingPomoNotice=$notice
   Present-PomodoroNotice
+  Request-Cymbals $notice
   Sync-PomodoroTimer
  }
 }

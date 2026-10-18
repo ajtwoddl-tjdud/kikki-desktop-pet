@@ -10,7 +10,7 @@ function Complete-ClassTimer {
 }
 
 function Sync-PetTimers {
-    $active=$script:chaosEnabled -or $null -ne $script:cameraScene -or $null -ne $script:pokeScene -or $script:pressed -or $script:dragging -or $null -ne $script:roam -or $null -ne $script:poseTransition -or $null -ne $script:dropStart -or $script:clock.Elapsed.TotalSeconds -lt $script:sulkEnd
+    $active=$null -ne $script:cymbalScene -or $script:chaosEnabled -or $null -ne $script:cameraScene -or $null -ne $script:pokeScene -or $script:pressed -or $script:dragging -or $null -ne $script:roam -or $null -ne $script:poseTransition -or $null -ne $script:dropStart -or $script:clock.Elapsed.TotalSeconds -lt $script:sulkEnd
     $milliseconds=[KikkiUpdateSchedule]::FrameMilliseconds($script:window.IsVisible,$script:motion,$active)
     if ($milliseconds -eq 0) { $script:timer.Stop() }
     else {
