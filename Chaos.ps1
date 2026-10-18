@@ -45,6 +45,7 @@ for ($i=0;$i -lt 8;$i++) {
  $image=[Windows.Media.DrawingImage]::new($group); $image.Freeze(); $script:cameraSprites+=$image
 }
 . (Join-Path $PSScriptRoot 'Reels.ps1')
+. (Join-Path $PSScriptRoot 'Smoking.ps1')
 function Start-CameraScene([string]$kind,[double]$t,[ValidateRange(-1,3)][int]$ReelsStyle=-1) {
  if ($script:pressed -or $script:dragging) { return }
  $returnMode=$script:mode; $previous=$script:pet.Source
@@ -54,13 +55,15 @@ function Start-CameraScene([string]$kind,[double]$t,[ValidateRange(-1,3)][int]$R
   if ($ReelsStyle -lt 0) { $style=Get-NextReelsStyle }
   else { $style=$ReelsStyle; $script:previousReelsStyle=$style }
  }
- $script:cameraScene=@{kind=$kind;start=$t;returnMode=$returnMode;previous=$previous;style=$style}
+ $duration=if ($kind -eq 'smoke' -and -not $script:chaosEnabled) {6.5} else {3.0}
+ $script:cameraScene=@{kind=$kind;start=$t;returnMode=$returnMode;previous=$previous;style=$style;duration=$duration}
  $script:pendingPoke=$null
- $script:quietUntil=$t+3+(Get-ActivitySeconds $returnMode)
+ $script:quietUntil=$t+$duration+(Get-ActivitySeconds $returnMode)
  $script:nextCamera=$t+$script:rng.Next(120,241)
  Say-Random $kind
 }
 function Get-CameraFrame([string]$kind,[double]$age,[int]$ReelsStyle=0) {
+ if ($kind -eq 'smoke') { return Get-SmokeFrame $age }
  if ($kind -eq 'selfie') {
   if ($age -lt 0.45) { return 0 }
   if ($age -lt 1.1) { return 1 }
@@ -82,14 +85,15 @@ function Render-CameraScene([double]$t) {
  if ($null -eq $script:cameraScene) { return }
  if ($script:dragging) { $script:cameraScene=$null; return }
  $scene=$script:cameraScene; $age=$t-$scene.start
- if ($age -ge 3) {
+ if ($age -ge $scene.duration) {
   $script:cameraScene=$null
   if (-not $script:chaosEnabled) { Set-Pose $scene.returnMode }
   return
  }
- $frame=Get-CameraFrame $scene.kind $age $scene.style
- if (-not $script:motion) { $frame=if ($scene.kind -eq 'selfie') {1} else {4+$scene.style*4} }
- $script:pet.Source=$script:cameraSprites[$frame]
+ $frameAge=if ($scene.kind -eq 'smoke') {$age*3.0/$scene.duration} else {$age}
+ $frame=Get-CameraFrame $scene.kind $frameAge $scene.style
+ if (-not $script:motion) { $frame=switch ($scene.kind) {'selfie' {1} 'smoke' {0} default {4+$scene.style*4}} }
+ $script:pet.Source=if ($scene.kind -eq 'smoke') {$script:smokeSprites[$frame]} else {$script:cameraSprites[$frame]}
  $script:pet.Opacity=1
  $script:restBlend.Visibility='Hidden'; $script:sleepMark.Visibility='Hidden'; $script:fallingPhone.Visibility='Hidden'
  $tr=$script:pet.RenderTransform.Children
@@ -106,7 +110,7 @@ function Render-CameraScene([double]$t) {
  [Windows.Controls.Canvas]::SetTop($script:groundShadow,241)
 }
 function Get-NextChaosAction {
- $choices=@('selfie','reels','run','banana','phone','drop','sleep','game' | Where-Object { $_ -ne $script:chaosLast })
+ $choices=@('selfie','reels','smoke','run','banana','phone','drop','sleep','game' | Where-Object { $_ -ne $script:chaosLast })
  $script:chaosLast=$choices[$script:rng.Next($choices.Count)]
  return $script:chaosLast
 }
@@ -118,6 +122,7 @@ function Start-ChaosAction([string]$action,[double]$t) {
  switch ($action) {
   'selfie' { Start-CameraScene 'selfie' $t }
   'reels' { Start-CameraScene 'reels' $t }
+  'smoke' { Start-CameraScene 'smoke' $t }
   'run' {
    $script:roamEnabled=$true
    Start-Roam $t -Across

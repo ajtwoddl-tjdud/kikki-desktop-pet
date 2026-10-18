@@ -96,6 +96,8 @@ function Get-PomodoroPokeReply([string]$Fallback,[int]$Roll=-1) {
  $activityLines=if ($null -ne $script:cameraScene) {
   if ($script:cameraScene.kind -eq 'selfie') {
    @('너도 찍어줄게. 공부 끝나면.','사진 구경은 끝나고 해~','나 구경은 쉬는 시간에.')
+  } elseif ($script:cameraScene.kind -eq 'smoke') {
+   @('나 그만 보고 공부해~','끝나고 와. 아직 안 됐어.','쉬는 시간 아니잖아~')
   } else {
    @('춤 구경은 끝나고 해~','넌 공부해. 난 찍던 거 마저 찍고.','같이 놀 거면 다 하고 와.')
   }

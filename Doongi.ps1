@@ -546,6 +546,7 @@ Add-Menu '바나나 먹기' { $script:auto=$false; Set-Pose 0; Say-Random }
 Add-Menu '폰 보기' { $script:auto=$false; Set-Pose 1; Say-Random }
 Add-Menu '셀카 찍기' { $script:motion=$true; Start-CameraScene 'selfie' $script:clock.Elapsed.TotalSeconds }
 Add-Menu '릴스 찍기' { $script:motion=$true; Start-CameraScene 'reels' $script:clock.Elapsed.TotalSeconds }
+Add-Menu '담배 뻑뻑 피우기' { $script:motion=$true; Start-CameraScene 'smoke' $script:clock.Elapsed.TotalSeconds }
 $script:chaosMenu=New-Object Windows.Controls.MenuItem
 $script:chaosMenu.Header='야랄 모드 · 3초마다 난리 나기'
 $script:chaosMenu.IsCheckable=$true
@@ -665,7 +666,7 @@ $timer.Add_Tick({
         if ($null -ne $script:cymbalScene) { Render-Cymbals } else {
         Update-Chaos $script:clock.Elapsed.TotalSeconds
         if (-not $SelfTest -and (Get-DueDetail $script:clock.Elapsed.TotalSeconds) -eq 'camera' -and -not $script:pet.ContextMenu.IsOpen) {
-            Start-CameraScene (@('selfie','reels')[$script:rng.Next(2)]) $script:clock.Elapsed.TotalSeconds
+            Start-CameraScene (@('selfie','reels','smoke')[$script:rng.Next(3)]) $script:clock.Elapsed.TotalSeconds
         }
         Animate-Pet $script:clock.Elapsed.TotalSeconds
         Update-Rest $script:clock.Elapsed.TotalSeconds
@@ -950,6 +951,8 @@ if ($SelfTest) {
     Invoke-ChaosSelfTest
     . (Join-Path $PSScriptRoot 'Reels.Tests.ps1')
     Invoke-ReelsSelfTest
+    . (Join-Path $PSScriptRoot 'Smoking.Tests.ps1')
+    Invoke-SmokingSelfTest
     . (Join-Path $PSScriptRoot 'Extras.Tests.ps1')
     Invoke-ExtrasSelfTest
     $window.Close()
