@@ -135,6 +135,34 @@ $script:quietUntil=0; $script:roamEnabled=$true; $script:nextRoam=0
 Assert ((Get-DueDetail 10) -eq '') 'An overdue detail stole the automatic walk'
 $script:mode=2
 Assert (-not (Test-RoamDue 10)) 'Sleeping pet should not autonomously walk'
+$script:nextCamera=5
+foreach ($mode in @(0,1,3)) {
+ $script:mode=$mode
+ Assert ((Get-DueDetail 10) -eq 'camera') 'Overdue life action was starved by a posture restriction, rest or walk'
+}
+$script:mode=2
+Assert ((Get-DueDetail 10) -ne 'camera') 'New life action woke the sleeping pet'
+$script:mode=1; $script:quietUntil=20
+Assert ((Get-DueDetail 10) -eq '') 'Life action interrupted the quiet hold'
+$script:quietUntil=0; $script:rest=@{start=0;hold=150}
+Assert ((Get-DueDetail 10) -eq '') 'Life action interrupted the long side rest'
+$script:rest=$null; $script:pressed=$true
+Assert ((Get-DueDetail 10) -eq '') 'Life action interrupted a held pet'
+$script:pressed=$false; $script:auto=$false; $script:roamEnabled=$false
+Assert ((Get-DueDetail 10) -ne 'camera') 'Life actions ignored manual activity selection'
+$script:auto=$true
+$previous=''
+foreach ($cycle in 1..20) {
+ $seen=New-Object 'System.Collections.Generic.HashSet[string]'
+ foreach ($slot in 1..5) {
+  $action=Get-NextLifeAction
+  Assert ($action -ne $previous) 'Life action repeated across shuffle rounds'
+  Assert ($seen.Add($action)) 'Life action bag repeated one gesture before showing the others'
+  $previous=$action
+ }
+ Assert ($seen.Count -eq 5 -and $seen.Contains('noodles') -and $seen.Contains('hairHeart')) 'A new activity was missing from the life rotation'
+}
+$script:nextCamera=$null
 . (Join-Path $root 'Mischief.ps1')
 $contexts=@('hello','gameStart','gameCheer','gameLoss','eatPoke','phonePoke','gamePoke','sleepPoke','lift','putDown','phoneDrop','walk','walkPoke','backPoke','playful')
 foreach ($name in $contexts) {

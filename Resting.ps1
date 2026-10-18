@@ -72,7 +72,8 @@ function Start-Rest([double]$t) {
   $script:rest.gameSource=if ($script:rng.Next(3) -eq 0) { $script:playfulSprites[3] } else { $script:lookSprites[3] }
  }
  $script:expressionEnd=0
- $script:quietUntil=$t+$hold+(Get-ActivitySeconds $script:mode)
+ # The long-held lying pose already supplies the quiet interval; do not add another full wait.
+ $script:quietUntil=if ($script:mode -in @(1,2)) { $t+$hold } else { $t+$hold+(Get-ActivitySeconds $script:mode) }
  if ($script:nextChange -lt [DateTime]::Now.AddSeconds($hold+2)) { $script:nextChange=[DateTime]::Now.AddSeconds($hold+2) }
 }
 function Update-Rest([double]$t) {

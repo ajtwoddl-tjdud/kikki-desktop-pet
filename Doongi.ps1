@@ -674,7 +674,7 @@ $timer.Add_Tick({
         if ($null -ne $script:cymbalScene) { Render-Cymbals } else {
         Update-Chaos $script:clock.Elapsed.TotalSeconds
         if (-not $SelfTest -and (Get-DueDetail $script:clock.Elapsed.TotalSeconds) -eq 'camera' -and -not $script:pet.ContextMenu.IsOpen) {
-            Start-CameraScene (@('selfie','reels','smoke','hairHeart','noodles')[$script:rng.Next(5)]) $script:clock.Elapsed.TotalSeconds
+            Start-CameraScene (Get-NextLifeAction) $script:clock.Elapsed.TotalSeconds
         }
         Animate-Pet $script:clock.Elapsed.TotalSeconds
         Update-Rest $script:clock.Elapsed.TotalSeconds
@@ -830,6 +830,7 @@ if ($SelfTest) {
         $expectedSource=if ($i -eq 3) { $script:rest.gameSource } else { $script:restSprites[@(5,3,1)[$i]] }
         if (-not [Object]::ReferenceEquals($pet.Source,$expectedSource)) { throw 'Rest pose incorrect' }
         if ($i -in @(1,2)) {
+            if ($script:quietUntil -gt 600+$script:rest.hold+0.01) { throw 'Long side rest added a second full quiet interval' }
             Update-Rest 660
             $lyingStretch=@($script:extraSprites[4..7] | Where-Object { [Object]::ReferenceEquals($pet.Source,$_) }).Count -gt 0
             if ($null -eq $script:rest -or (-not [Object]::ReferenceEquals($pet.Source,$expectedSource) -and -not $lyingStretch)) { throw 'Side pose did not remain visible for a full minute' }
