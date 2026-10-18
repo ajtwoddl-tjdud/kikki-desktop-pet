@@ -8,7 +8,7 @@
   if ($action -eq $last) { throw 'Chaos immediately repeated the same action' }
   [void]$seen.Add($action); $last=$action
  }
- if ($seen.Count -ne 9) { throw 'Random chaos omitted an action' }
+ if ($seen.Count -ne 10) { throw 'Random chaos omitted an action' }
  Set-Pose 1 -Immediate
  $script:auto=$true; $script:motion=$false; $script:roamEnabled=$false
  Set-ChaosEnabled $true
@@ -17,16 +17,16 @@
  $area=[Windows.SystemParameters]::WorkArea
  $script:window.Left=$area.Left+12
  $t=20000.0
- foreach ($action in @('selfie','reels','smoke','banana','phone','sleep','game','drop','run')) {
+ foreach ($action in @('selfie','reels','smoke','hairHeart','banana','phone','sleep','game','drop','run')) {
   Start-ChaosAction $action $t
   if ($script:chaosNext -ne $t+3) { throw 'Chaos action did not use a three-second deadline' }
-  if ($action -in @('selfie','reels','smoke')) {
+  if ($action -in @('selfie','reels','smoke','hairHeart')) {
    $frames=New-Object 'System.Collections.Generic.HashSet[int]'
    foreach ($age in @(0.2,0.7,1.4,2.8)) {
     $index=Get-CameraFrame $action $age $script:cameraScene.style
     [void]$frames.Add($index)
     Animate-Pet ($t+$age); Render-CameraScene ($t+$age)
-    $expected=if ($action -eq 'smoke') {$script:smokeSprites[$index]} else {$script:cameraSprites[$index]}
+    $expected=switch ($action) {'smoke' {$script:smokeSprites[$index]} 'hairHeart' {$script:hairHeartSprites[$index]} default {$script:cameraSprites[$index]}}
     if (-not [Object]::ReferenceEquals($script:pet.Source,$expected)) { throw "Camera did not render its actual pose: $action at $age" }
    }
    if ($frames.Count -lt 3) { throw 'Camera sequence lacked pose changes' }
@@ -113,5 +113,5 @@
   $stream=[IO.File]::Create((Join-Path $env:KIKKI_PREVIEW_DIR 'kikki-camera-preview.png'))
   try { $encoder.Save($stream) } finally { $stream.Dispose() }
  }
- Write-Output 'PASS: random non-repeating chaos; all nine actions; three-second crossing and complete phone pickup; camera/smoke frames; interruption; settings restoration; repeated poke variety.'
+ Write-Output 'PASS: random non-repeating chaos; all ten actions; winding crossing and complete phone pickup; camera/smoke/hair-heart frames; interruption; settings restoration; repeated poke variety.'
 }

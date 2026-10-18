@@ -46,6 +46,7 @@ for ($i=0;$i -lt 8;$i++) {
 }
 . (Join-Path $PSScriptRoot 'Reels.ps1')
 . (Join-Path $PSScriptRoot 'Smoking.ps1')
+. (Join-Path $PSScriptRoot 'HairHeart.ps1')
 function Start-CameraScene([string]$kind,[double]$t,[ValidateRange(-1,3)][int]$ReelsStyle=-1) {
  if ($script:pressed -or $script:dragging) { return }
  $returnMode=$script:mode; $previous=$script:pet.Source
@@ -55,7 +56,7 @@ function Start-CameraScene([string]$kind,[double]$t,[ValidateRange(-1,3)][int]$R
   if ($ReelsStyle -lt 0) { $style=Get-NextReelsStyle }
   else { $style=$ReelsStyle; $script:previousReelsStyle=$style }
  }
- $duration=if ($kind -eq 'smoke' -and -not $script:chaosEnabled) {6.5} else {3.0}
+ $duration=if (-not $script:chaosEnabled -and $kind -eq 'smoke') {6.5} elseif (-not $script:chaosEnabled -and $kind -eq 'hairHeart') {5.6} else {3.0}
  $script:cameraScene=@{kind=$kind;start=$t;returnMode=$returnMode;previous=$previous;style=$style;duration=$duration}
  $script:pendingPoke=$null
  $script:quietUntil=$t+$duration+(Get-ActivitySeconds $returnMode)
@@ -63,6 +64,7 @@ function Start-CameraScene([string]$kind,[double]$t,[ValidateRange(-1,3)][int]$R
  Say-Random $kind
 }
 function Get-CameraFrame([string]$kind,[double]$age,[int]$ReelsStyle=0) {
+ if ($kind -eq 'hairHeart') { return Get-HairHeartFrame $age }
  if ($kind -eq 'smoke') { return Get-SmokeFrame $age }
  if ($kind -eq 'selfie') {
   if ($age -lt 0.45) { return 0 }
@@ -90,10 +92,10 @@ function Render-CameraScene([double]$t) {
   if (-not $script:chaosEnabled) { Set-Pose $scene.returnMode }
   return
  }
- $frameAge=if ($scene.kind -eq 'smoke') {$age*3.0/$scene.duration} else {$age}
+ $frameAge=if ($scene.kind -in @('smoke','hairHeart')) {$age*3.0/$scene.duration} else {$age}
  $frame=Get-CameraFrame $scene.kind $frameAge $scene.style
- if (-not $script:motion) { $frame=switch ($scene.kind) {'selfie' {1} 'smoke' {0} default {4+$scene.style*4}} }
- $script:pet.Source=if ($scene.kind -eq 'smoke') {$script:smokeSprites[$frame]} else {$script:cameraSprites[$frame]}
+ if (-not $script:motion) { $frame=switch ($scene.kind) {'selfie' {1} 'smoke' {0} 'hairHeart' {4} default {4+$scene.style*4}} }
+ $script:pet.Source=switch ($scene.kind) {'smoke' {$script:smokeSprites[$frame]} 'hairHeart' {$script:hairHeartSprites[$frame]} default {$script:cameraSprites[$frame]}}
  $script:pet.Opacity=1
  $script:restBlend.Visibility='Hidden'; $script:sleepMark.Visibility='Hidden'; $script:fallingPhone.Visibility='Hidden'
  $tr=$script:pet.RenderTransform.Children
@@ -110,7 +112,7 @@ function Render-CameraScene([double]$t) {
  [Windows.Controls.Canvas]::SetTop($script:groundShadow,241)
 }
 function Get-NextChaosAction {
- $choices=@('selfie','reels','smoke','run','banana','phone','drop','sleep','game' | Where-Object { $_ -ne $script:chaosLast })
+ $choices=@('selfie','reels','smoke','hairHeart','run','banana','phone','drop','sleep','game' | Where-Object { $_ -ne $script:chaosLast })
  $script:chaosLast=$choices[$script:rng.Next($choices.Count)]
  return $script:chaosLast
 }
@@ -123,6 +125,7 @@ function Start-ChaosAction([string]$action,[double]$t) {
   'selfie' { Start-CameraScene 'selfie' $t }
   'reels' { Start-CameraScene 'reels' $t }
   'smoke' { Start-CameraScene 'smoke' $t }
+  'hairHeart' { Start-CameraScene 'hairHeart' $t }
   'run' {
    $script:roamEnabled=$true
    Keep-OnScreen
