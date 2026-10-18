@@ -23,7 +23,7 @@
   if ($action -in @('selfie','reels')) {
    $frames=New-Object 'System.Collections.Generic.HashSet[int]'
    foreach ($age in @(0.2,0.7,1.4,2.6)) {
-    $index=Get-CameraFrame $action $age
+    $index=Get-CameraFrame $action $age $script:cameraScene.style
     [void]$frames.Add($index)
     Animate-Pet ($t+$age); Render-CameraScene ($t+$age)
     if (-not [Object]::ReferenceEquals($script:pet.Source,$script:cameraSprites[$index])) { throw 'Camera did not render its actual pose' }

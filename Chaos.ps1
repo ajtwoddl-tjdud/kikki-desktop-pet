@@ -44,26 +44,39 @@ for ($i=0;$i -lt 8;$i++) {
  $ctx.Close()
  $image=[Windows.Media.DrawingImage]::new($group); $image.Freeze(); $script:cameraSprites+=$image
 }
-function Start-CameraScene([string]$kind,[double]$t) {
+. (Join-Path $PSScriptRoot 'Reels.ps1')
+function Start-CameraScene([string]$kind,[double]$t,[ValidateRange(-1,3)][int]$ReelsStyle=-1) {
  if ($script:pressed -or $script:dragging) { return }
  $returnMode=$script:mode; $previous=$script:pet.Source
  Set-Pose 0 -Immediate
- $script:cameraScene=@{kind=$kind;start=$t;returnMode=$returnMode;previous=$previous}
+ $style=0
+ if ($kind -eq 'reels') {
+  if ($ReelsStyle -lt 0) { $style=Get-NextReelsStyle }
+  else { $style=$ReelsStyle; $script:previousReelsStyle=$style }
+ }
+ $script:cameraScene=@{kind=$kind;start=$t;returnMode=$returnMode;previous=$previous;style=$style}
  $script:pendingPoke=$null
  $script:quietUntil=$t+3+(Get-ActivitySeconds $returnMode)
  $script:nextCamera=$t+$script:rng.Next(120,241)
  Say-Random $kind
 }
-function Get-CameraFrame([string]$kind,[double]$age) {
+function Get-CameraFrame([string]$kind,[double]$age,[int]$ReelsStyle=0) {
  if ($kind -eq 'selfie') {
   if ($age -lt 0.45) { return 0 }
   if ($age -lt 1.1) { return 1 }
   if ($age -lt 1.9) { return 2 }
   return 3
  }
- if ($age -lt 0.4) { return 4 }
- if ($age -ge 2.45) { return 7 }
- return 5+([int][Math]::Floor(($age-0.4)/0.28)%2)
+ $first=4+$ReelsStyle*4
+ if ($age -lt 0.4) { return $first }
+ if ($ReelsStyle -eq 3) {
+  if ($age -lt 1.0) { return $first+1 }
+  if ($age -lt 1.9) { return $first+2 }
+  return $first+3
+ }
+ if ($age -ge 2.45) { return $first+3 }
+ $beat=@(0.28,0.34,0.22)[$ReelsStyle]
+ return $first+1+([int][Math]::Floor(($age-0.4)/$beat)%2)
 }
 function Render-CameraScene([double]$t) {
  if ($null -eq $script:cameraScene) { return }
@@ -74,8 +87,8 @@ function Render-CameraScene([double]$t) {
   if (-not $script:chaosEnabled) { Set-Pose $scene.returnMode }
   return
  }
- $frame=Get-CameraFrame $scene.kind $age
- if (-not $script:motion) { $frame=if ($scene.kind -eq 'selfie') {1} else {4} }
+ $frame=Get-CameraFrame $scene.kind $age $scene.style
+ if (-not $script:motion) { $frame=if ($scene.kind -eq 'selfie') {1} else {4+$scene.style*4} }
  $script:pet.Source=$script:cameraSprites[$frame]
  $script:pet.Opacity=1
  $script:restBlend.Visibility='Hidden'; $script:sleepMark.Visibility='Hidden'; $script:fallingPhone.Visibility='Hidden'
@@ -86,7 +99,9 @@ function Render-CameraScene([double]$t) {
   $script:restBlend.Opacity=1-$p; $script:restBlend.Visibility='Visible'; $script:pet.Opacity=$p
  }
  if ($script:motion -and $scene.kind -eq 'reels' -and $age -ge 0.4 -and $age -lt 2.45) {
-  $tr[2].Y=-2*[Math]::Abs([Math]::Sin(($age-0.4)*[Math]::PI/0.28))
+  $beat=@(0.28,0.34,0.22,0.4)[$scene.style]
+  $bounce=@(2.0,0.6,1.2,0.0)[$scene.style]
+  $tr[2].Y=-$bounce*[Math]::Abs([Math]::Sin(($age-0.4)*[Math]::PI/$beat))
  }
  [Windows.Controls.Canvas]::SetTop($script:groundShadow,241)
 }

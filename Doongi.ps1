@@ -948,6 +948,8 @@ if ($SelfTest) {
     Write-Output ('PASS: 78 sprites; upward lift/wriggle/release; four-stage hand pickup; rest/eat/phone poses and interruption; aligned eight-frame gait; distance easing; expressions; phone drop; quiet poke; roam/stretch/bounds/settle/cancel/disable; WPF layout; {0} menu entries.' -f $menu.Items.Count)
     . (Join-Path $PSScriptRoot 'Chaos.Tests.ps1')
     Invoke-ChaosSelfTest
+    . (Join-Path $PSScriptRoot 'Reels.Tests.ps1')
+    Invoke-ReelsSelfTest
     . (Join-Path $PSScriptRoot 'Extras.Tests.ps1')
     Invoke-ExtrasSelfTest
     $window.Close()
