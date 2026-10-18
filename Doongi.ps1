@@ -177,7 +177,8 @@ function React-ToPoke([double]$t) {
     if (Start-RepeatPoke $t) { return }
     if ($null -ne $script:cameraScene) {
         $script:attentionStart=$t; $script:attentionEnd=$t+1.0
-        Say-Random ($script:cameraScene.kind+'Poke') -Poke
+        $context=if ($script:cameraScene.kind -eq 'noodles') { Get-NoodlesPokeContext $t } else { $script:cameraScene.kind+'Poke' }
+        Say-Random $context -Poke
         return
     }
     if ($null -ne $script:roam) {
@@ -548,6 +549,7 @@ Add-Menu '셀카 찍기' { $script:motion=$true; Start-CameraScene 'selfie' $scr
 Add-Menu '릴스 찍기' { $script:motion=$true; Start-CameraScene 'reels' $script:clock.Elapsed.TotalSeconds }
 Add-Menu '담배 뻑뻑 피우기' { $script:motion=$true; Start-CameraScene 'smoke' $script:clock.Elapsed.TotalSeconds }
 Add-Menu '머리카락으로 하트 만들기' { $script:motion=$true; Start-CameraScene 'hairHeart' $script:clock.Elapsed.TotalSeconds }
+Add-Menu '불닭 먹기' { $script:motion=$true; Start-CameraScene 'noodles' $script:clock.Elapsed.TotalSeconds }
 $script:chaosMenu=New-Object Windows.Controls.MenuItem
 $script:chaosMenu.Header='야랄 모드 · 3초마다 난리 나기'
 $script:chaosMenu.IsCheckable=$true
@@ -672,7 +674,7 @@ $timer.Add_Tick({
         if ($null -ne $script:cymbalScene) { Render-Cymbals } else {
         Update-Chaos $script:clock.Elapsed.TotalSeconds
         if (-not $SelfTest -and (Get-DueDetail $script:clock.Elapsed.TotalSeconds) -eq 'camera' -and -not $script:pet.ContextMenu.IsOpen) {
-            Start-CameraScene (@('selfie','reels','smoke','hairHeart')[$script:rng.Next(4)]) $script:clock.Elapsed.TotalSeconds
+            Start-CameraScene (@('selfie','reels','smoke','hairHeart','noodles')[$script:rng.Next(5)]) $script:clock.Elapsed.TotalSeconds
         }
         Animate-Pet $script:clock.Elapsed.TotalSeconds
         Update-Rest $script:clock.Elapsed.TotalSeconds
@@ -962,6 +964,8 @@ if ($SelfTest) {
     Invoke-SmokingSelfTest
     . (Join-Path $PSScriptRoot 'HairHeart.Tests.ps1')
     Invoke-HairHeartSelfTest
+    . (Join-Path $PSScriptRoot 'Noodles.Tests.ps1')
+    Invoke-NoodlesSelfTest
     . (Join-Path $PSScriptRoot 'Extras.Tests.ps1')
     Invoke-ExtrasSelfTest
     . (Join-Path $PSScriptRoot 'PomodoroStore.Tests.ps1')
