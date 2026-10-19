@@ -22,11 +22,16 @@ scales={}
 for family in set(families.values()):
     selected=[box for n,box in boxes.items() if families[n.rsplit('-',1)[0]]==family and n!='drop-01.png']
     scales[family]=min(1.14,540/max(b[2]-b[0] for b in selected),(500 if family=='locomotion' else 520)/max(b[3]-b[1] for b in selected))
+# Gait frames share one crop/origin, so silhouette changes cannot slide the body.
+gait_keys={'walk','glance','walkSmooth','glanceSmooth'}
+gait_boxes=[b for n,b in boxes.items() if n.rsplit('-',1)[0] in gait_keys]
+gait_box=(min(b[0] for b in gait_boxes),min(b[1] for b in gait_boxes),max(b[2] for b in gait_boxes),max(b[3] for b in gait_boxes))
 manifest={'version':1,'renderer':'Blender EEVEE','frameSize':627,'sheets':{},'atlases':[]}
 for key,source,count,cols,rows in FRAME_SHEETS:
     paths=[]
     for i in range(count):
         name=f'{key}-{i:02}.png';im=images[name];b=boxes[name];scale=scales[families[key]]
+        if key in gait_keys:b=gait_box
         cropped=im.crop(b);size=(max(1,round(cropped.width*scale)),max(1,round(cropped.height*scale)))
         thumb=cropped.resize(size,Image.Resampling.LANCZOS);canvas=Image.new('RGBA',(627,627))
         x=(627-thumb.width)//2;y=590-thumb.height

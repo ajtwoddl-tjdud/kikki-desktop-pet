@@ -46,3 +46,5 @@ Mac은 `UserDefaults.visualStyle`, Windows는 `%LOCALAPPDATA%\Kikki\visual-style
 모델을 다시 생성할 때는 `build_animation.py` 이후 `add_inbetweens.py`, `add_action_frames.py`를 순서대로 실행한 뒤 렌더링·패키징합니다. 저장된 `.blend`와 카탈로그에는 이미 중간 자세가 들어 있습니다.
 
 3D 걷기는 32프레임(고개 돌린 걷기도 32), 폰 보기는 24프레임 순환, 하트 만들기는 21프레임, 폰 줍기는 13프레임입니다. 기존 이동 거리·시간과 자동 활동 간격을 유지합니다.
+
+걷기 관절 보정: `add_action_frames.py` 다음에 `refine_walk.py`를 실행합니다. 고정 길이 다리의 2관절 계산, 앞쪽 무릎 굽힘, 발 디딤/회수 구간, 반대 방향 팔 스윙을 직접 32개 위상에서 계산합니다. `walk`/`glance`와 해당 Smooth 프레임만 갱신하며, 패키징 시 걷기 프레임은 공통 원점을 유지합니다.
