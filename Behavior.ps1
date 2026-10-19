@@ -5,7 +5,7 @@ $script:lifeActionBag=@()
 $script:lastLifeAction=''
 function Get-NextLifeAction {
  if ($script:lifeActionBag.Count -eq 0) {
-  $remaining=@('selfie','reels','smoke','hairHeart','noodles','potty')
+  $remaining=@('selfie','reels','smoke','hairHeart','noodles')
   $bag=@()
   while ($remaining.Count -gt 0) {
    $choices=@($remaining | Where-Object { $bag.Count -gt 0 -or $_ -ne $script:lastLifeAction })

@@ -154,13 +154,13 @@ $script:auto=$true
 $previous=''
 foreach ($cycle in 1..20) {
  $seen=New-Object 'System.Collections.Generic.HashSet[string]'
- foreach ($slot in 1..6) {
+ foreach ($slot in 1..5) {
   $action=Get-NextLifeAction
   Assert ($action -ne $previous) 'Life action repeated across shuffle rounds'
   Assert ($seen.Add($action)) 'Life action bag repeated one gesture before showing the others'
   $previous=$action
  }
- Assert ($seen.Count -eq 6 -and $seen.Contains('potty') -and $seen.Contains('noodles') -and $seen.Contains('hairHeart')) 'A new activity was missing from the life rotation'
+ Assert ($seen.Count -eq 5 -and $seen.Contains('noodles') -and $seen.Contains('hairHeart')) 'A new activity was missing from the life rotation'
 }
 $script:nextCamera=$null
 . (Join-Path $root 'Mischief.ps1')

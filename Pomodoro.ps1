@@ -106,8 +106,6 @@ function Get-PomodoroPokeReply([string]$Fallback,[int]$Roll=-1) {
    @('나 그만 보고 공부해~','끝나고 와. 아직 안 됐어.','쉬는 시간 아니잖아~')
   } elseif ($script:cameraScene.kind -eq 'noodles') {
    @('난 먹을게. 넌 공부해~','다 하면 한 입 줄게.','나 매워하는 거 그만 보고 공부해~')
-  } elseif ($script:cameraScene.kind -eq 'potty') {
-   @('저쪽 봐. 책 있는 쪽.','구경은 됐고. 공부해~','나 말고 책 봐. 지금은 쫌.')
   } elseif ($script:cameraScene.kind -eq 'hairHeart') {
    @('다 하면 줄게. 아직 공부 중이잖아.','이거 보고 공부하러 가~','보고 있지 말고 마저 하고 와.')
   } else {
