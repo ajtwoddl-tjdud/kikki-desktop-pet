@@ -10,3 +10,8 @@ Desktop.ini
 .DS_Store
 .env
 .env.*
+
+# Blender/Python working backups
+*.blend1
+*.blend2
+__pycache__/

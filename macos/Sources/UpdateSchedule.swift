@@ -9,7 +9,7 @@ enum UpdateSchedule {
 
     static func interval(for state: PetState) -> TimeInterval? {
         interval(visible: state.visible, motion: state.motion,
-                 active: state.pressed || state.dragging || state.walk != nil || state.transition != nil ||
+                 active: state.assetClip != nil || state.pressed || state.dragging || state.walk != nil || state.transition != nil ||
                     state.dropStart != nil || state.lifted || state.time < state.sulkEnd)
     }
 }

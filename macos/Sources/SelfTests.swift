@@ -19,7 +19,7 @@ func runSelfTests() throws {
     try check(state.time == 0 && state.nextChange == originalDeadline, "Hidden pet advanced its animation/activity clock")
     try check(state.pendingClassEnd && state.classEnd == nil, "Hidden class timer did not finish")
     state.toggleVisibility()
-    try check(!state.pendingClassEnd && state.message.contains("고생했어"), "Timer completion was lost on show")
+    try check(!state.pendingClassEnd && state.message == "끝났다. 이제 쉬자.", "Timer completion was lost on show")
     _ = state.advance(by: 1, now: now.addingTimeInterval(121))
     try check(state.activity == .sleep && state.walk == nil, "Sleeping pet spontaneously walked")
 
@@ -126,7 +126,7 @@ func runSelfTests() throws {
     try check(gentle.nextChange == gentleDeadline && gentle.nextWalk == gentleWalk, "Mischief setting changed autonomous cadence")
     gentle.setMischiefLevel(.off)
     gentle.poke()
-    try check(gentle.message == "응? 너 보고 있어." && gentle.memeFaceEnd == 0, "Off-mode poke did not use the ordinary reaction")
+    try check(gentle.message == "왜애. 나 댓글 읽잖아." && gentle.memeFaceEnd == 0, "Off-mode poke did not use the ordinary reaction")
     gentle.attentionEnd = 0
     gentle.startPhoneDrop()
     gentle.say("before impact")
@@ -192,6 +192,98 @@ func runSelfTests() throws {
     _ = view.invalidateIfNeeded()
     state.time += 0.1
     try check(view.invalidateIfNeeded(), "Breathing stopped updating")
+    // Switching visuals must preserve the running scene and invalidate even a frozen frame.
+    state.clearScene(); state.setActivity(.banana, transition: false); state.motion = false
+    state.bubbleEnd = 0
+    try sprites.setStyle(.twoD)
+    _ = view.invalidateIfNeeded()
+    let originalImage = sprites["base", 0].image
+    let unchangedTime = state.time, unchangedDeadline = state.nextChange
+    try sprites.setStyle(.threeD)
+    try check(view.invalidateIfNeeded(), "Style switch left a stale reduced-motion frame")
+    try check(state.time == unchangedTime && state.nextChange == unchangedDeadline && state.activity == .banana,
+              "Style switch reset the activity clock")
+    try check(sprites["base", 0].image !== originalImage, "3D bank reused the 2D image")
+    try check(sprites.sheets.values.reduce(0) { $0 + $1.count } == 258, "Incomplete 3D asset coverage (257 plus landed alias)")
+    for (key, frames) in sprites.sheets {
+        for sprite in frames {
+            try check(sprite.image.width == 627 && sprite.image.height == 627, "3D frame size: \(key)")
+            try check(sprite.silhouette.minX > 0 && sprite.silhouette.minY > 0 && sprite.silhouette.maxX < 627 && sprite.silhouette.maxY < 627,
+                      "3D frame clipped or empty: \(key)")
+        }
+    }
+    state.playAsset(sheet: "hairHeart", frames: Array(0..<6))
+    state.time += 1.2
+    let clipBefore = view.currentSprite()
+    try sprites.setStyle(.twoD)
+    try check(clipBefore.0 == "heartSmooth" && view.currentSprite().0 == "hairHeart" && view.currentSprite().1 == clipBefore.1 / 4, "Style switch restarted special animation")
+    try check(sprites["base", 0].image === originalImage, "2D originals were not restored")
+    state.toggleVisibility()
+    let hiddenClipTime = state.time
+    _ = state.advance(by: 60, now: now)
+    try check(state.time == hiddenClipTime && state.assetClip != nil, "Hidden special animation did not pause")
+    state.toggleVisibility()
+    _ = state.advance(by: 10, now: now)
+    try check(state.assetClip == nil, "Special animation did not return to activity")
+    state.playAsset(sheet: "reels", frames: Array(0..<4)); state.setMotion(false)
+    try check(state.assetClip == nil, "Reduced motion left a special clip running")
+    state.clearScene(); state.motion = true; state.automatic = false
+    state.setActivity(.banana, transition: false)
+    let oldNextWalk = state.nextWalk, oldNextChange = state.nextChange
+    state.set3DTransitions(true)
+    try check(state.nextWalk == oldNextWalk && state.nextChange == oldNextChange, "Faster transitions changed automatic activity intervals")
+    state.setActivity(.sleep)
+    let quick = state.transition!
+    try check(quick.stepDuration == 0.14 && quick.duration < Double(quick.route.count) * 0.22, "3D transition is not faster")
+    try sprites.setStyle(.threeD)
+    state.time = quick.start + 0.08
+    try check(view.currentSprite().0 == "transitionMid" && view.currentSprite().1 == 0, "3D transition skipped its real middle pose")
+    let phaseBefore = (state.time - quick.start) / quick.stepDuration
+    state.set3DTransitions(false)
+    let switched = state.transition!
+    try check(abs((state.time - switched.start) / switched.stepDuration - phaseBefore) < 0.00001,
+              "Mode switch jumped in the middle of a transition")
+    try sprites.setStyle(.twoD)
+    try check(view.currentSprite().0 == "transition", "2D requested a 3D-only midpoint")
+    state.clearScene(); state.motion = true
+    try sprites.setStyle(.threeD)
+    state.activity = .phone; state.time = 10.25
+    try check(view.currentSprite().0 == "phoneSmooth", "3D phone idle did not animate")
+    state.dropStart = state.time - 3.5
+    try check(view.currentSprite().0 == "pickupSmooth" && view.currentSprite().1 == 2, "Pickup skipped interpolated reach")
+    state.clearScene()
+    var smoothWalk = Walk(from: 0, to: 400, start: state.time - 2)
+    smoothWalk.frame = 2; smoothWalk.smoothFrame = 9
+    state.walk = smoothWalk
+    try check(view.currentSprite().0 == "walkSmooth" && view.currentSprite().1 == 9, "Walking skipped sub-stride frame")
+    smoothWalk.pausedAt = state.time; state.walk = smoothWalk
+    try check(view.currentSprite().0 == "glanceSmooth" && view.currentSprite().1 == 9, "Paused glance changed stride phase")
+    try sprites.setStyle(.twoD)
+    try check(view.currentSprite().0 == "glance" && view.currentSprite().1 == 2, "2D stride fallback changed")
+    state.clearScene()
+    for from in Activity.allCases {
+        for to in Activity.allCases {
+            let route = PoseTransition.route(from: from, to: to)
+            for (a, b) in zip(route, route.dropFirst()) {
+                try check(PoseTransition.midpoint(from: a, to: b) != nil, "Missing transition edge \(a)-\(b)")
+            }
+        }
+    }
+    if let output = ProcessInfo.processInfo.environment["KIKKI_PREVIEW_DIR"] {
+        let folder = URL(fileURLWithPath: output)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        view.setFrameSize(NSSize(width: 464, height: 540))
+        for style in VisualStyle.allCases {
+            try sprites.setStyle(style)
+            for activity in Activity.allCases {
+                state.setActivity(activity, transition: false); state.bubbleEnd = 0
+                guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { throw TestFailure(description: "Preview bitmap") }
+                view.cacheDisplay(in: view.bounds, to: bitmap)
+                guard let png = bitmap.representation(using: .png, properties: [:]) else { throw TestFailure(description: "Preview PNG") }
+                try png.write(to: folder.appendingPathComponent("\(style.rawValue)-\(activity.rawValue).png"))
+            }
+        }
+    }
     panel.close()
     print("SELF-TEST PASSED: \(checks) checks (behavior, timers, atlas loading, rendering, interaction bounds)")
 }

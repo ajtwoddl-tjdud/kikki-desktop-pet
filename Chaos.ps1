@@ -96,8 +96,13 @@ function Render-CameraScene([double]$t) {
  }
  $frameAge=if ($scene.kind -in @('smoke','hairHeart','noodles')) {$age*3.0/$scene.duration} else {$age}
  $frame=Get-CameraFrame $scene.kind $frameAge $scene.style
- if (-not $script:motion) { $frame=switch ($scene.kind) {'selfie' {1} 'smoke' {0} 'hairHeart' {4} 'noodles' {0} default {4+$scene.style*4}} }
- $script:pet.Source=switch ($scene.kind) {'smoke' {$script:smokeSprites[$frame]} 'hairHeart' {$script:hairHeartSprites[$frame]} 'noodles' {$script:noodlesSprites[$frame]} default {$script:cameraSprites[$frame]}}
+ if (-not $script:motion) { $frame=switch ($scene.kind) {'selfie' {1}; 'smoke' {0}; 'hairHeart' {4}; 'noodles' {0}; default {4+$scene.style*4}} }
+ $script:pet.Source=switch ($scene.kind) {'smoke' {$script:smokeSprites[$frame]}; 'hairHeart' {$script:hairHeartSprites[$frame]}; 'noodles' {$script:noodlesSprites[$frame]}; default {$script:cameraSprites[$frame]}}
+ if ($scene.kind -eq 'hairHeart' -and $script:visualStyle -eq '3d' -and $script:motion) {
+  $starts=@(0,0.4,0.8,1.2,1.6,2.55); $ends=@(0.4,0.8,1.2,1.6,2.55,3.0)
+  $sub=if ($frame -lt 5) {[Math]::Min(3,[Math]::Max(0,[Math]::Floor(($frameAge-$starts[$frame])/($ends[$frame]-$starts[$frame])*4)))} else {0}
+  $script:pet.Source=$script:heartSmoothSprites[($frame*4+$sub)]
+ }
  if ($scene.kind -eq 'noodles' -and $scene.lastFrame -ne $frame) {
   $scene.previousFrameSource=$scene.lastFrameSource
   $scene.lastFrame=$frame; $scene.frameChanged=$t; $scene.lastFrameSource=$script:pet.Source

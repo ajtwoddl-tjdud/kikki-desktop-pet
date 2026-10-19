@@ -62,6 +62,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             state.dialogue = MischiefDialogue(catalog: try MischiefCatalog(url: resources.appendingPathComponent("assets/mischief.json")))
             state.dialogue?.level = MischiefLevel(rawValue: UserDefaults.standard.string(forKey: "mischiefLevel") ?? "") ?? .normal
             state.sayContext("hello", fallback: "안녕하숭~")
+            let savedStyle = VisualStyle(rawValue: UserDefaults.standard.string(forKey: "visualStyle") ?? "") ?? .twoD
+            do { try sprites.setStyle(savedStyle); state.set3DTransitions(savedStyle == .threeD) }
+            catch { state.say("3D 이미지를 읽지 못해서 2D로 시작했어.") }
             panel = PetPanel(contentRect: NSRect(x: 0, y: 0, width: 232, height: 270),
                              styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
             panel.title = "끼끼"
@@ -221,6 +224,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             menu.addItem(item)
         }
         menu.addItem(.separator())
+        let styleMenu = NSMenu(title: "끼끼 모습")
+        for style in VisualStyle.allCases {
+            let item = ActionItem(style.title) { [self] in
+                do {
+                    try petView.sprites.setStyle(style)
+                    state.set3DTransitions(style == .threeD)
+                    UserDefaults.standard.set(style.rawValue, forKey: "visualStyle")
+                    statusItem.menu = makeMenu()
+                    petView.invalidateIfNeeded()
+                } catch { NSAlert(error: error).runModal() }
+            }
+            item.state = petView.sprites.style == style ? .on : .off
+            styleMenu.addItem(item)
+        }
+        let styleItem = NSMenuItem(title: "끼끼 모습 · 2D / 3D", action: nil, keyEquivalent: "")
+        styleItem.submenu = styleMenu; menu.addItem(styleItem)
         add("알아서 놀기") { [self] in state.automatic = true; state.say("너 할 거 해. 나 여기 있을게.") }
         for activity in Activity.allCases {
             add(activity.title) { [self] in
@@ -245,6 +264,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         add("메롱 해봐") { [self] in
             state.setActivity(.game, transition: false); state.expressionEnd = state.time + 1.15; state.say("메롱. 아 봤어?")
         }
+        let clips: [(String, String, [Int])] = [
+            ("셀카 찍기", "camera", Array(0..<4)), ("릴스 · 팔 흔들기", "camera", Array(4..<8)),
+            ("릴스 · 어깨 까딱", "reels", Array(0..<4)), ("릴스 · 발 스텝", "reels", Array(4..<8)),
+            ("릴스 · 손하트", "reels", Array(8..<12)), ("머리카락 하트", "hairHeart", Array(0..<6)),
+            ("매운 라면 먹기", "noodles", Array(0..<6)), ("한 대 피우기", "smoke", Array(0..<4)),
+            ("심벌즈 치기", "extra", [0,1,2,3,0,1,2,3]), ("누워서 쭉 스트레칭", "extra", Array(4..<8))
+        ]
+        let actionMenu = NSMenu(title: "특별 동작")
+        for (title, sheet, frames) in clips {
+            actionMenu.addItem(ActionItem(title) { [self] in
+                state.playAsset(sheet: sheet, frames: frames)
+                petView.invalidateIfNeeded(); updateTimers()
+            })
+        }
+        let actionItem = NSMenuItem(title: "특별 동작", action: nil, keyEquivalent: "")
+        actionItem.submenu = actionMenu; menu.addItem(actionItem)
         add("움직임 줄이기 / 다시 신나게") { [self] in state.setMotion(!state.motion); state.say("이 정도 텐션 어때.") }
         let mischiefMenu = NSMenu(title: "킹받기 조절")
         for level in MischiefLevel.allCases {

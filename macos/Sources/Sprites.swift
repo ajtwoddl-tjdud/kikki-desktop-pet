@@ -31,10 +31,27 @@ struct Sprite {
     }
 }
 
+enum VisualStyle: String, CaseIterable {
+    case twoD = "2d", threeD = "3d"
+    var title: String { self == .twoD ? "2D · 원래 끼끼" : "3D · 말랑 끼끼" }
+}
+
+private struct SpriteManifest: Decodable {
+    let version: Int
+    let frameSize: Int
+    let frameCount: Int
+    let sheets: [String: [String]]
+}
+
 final class Sprites {
     private(set) var sheets: [String: [Sprite]] = [:]
 
+    private let directory: URL
+    private var banks: [VisualStyle: [String: [Sprite]]] = [:]
+    private(set) var style: VisualStyle = .twoD
+
     init(directory: URL) throws {
+        self.directory = directory
         func load(_ name: String) throws -> CGImage {
             let url = directory.appendingPathComponent(name + ".png")
             guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
@@ -117,6 +134,66 @@ final class Sprites {
                             anchor: key == "lift" ? reference.minY : reference.maxY, top: key == "lift")
             }
         }
+        sheets["liftPose"] = try grid("doongi-lift")
+        sheets["camera"] = try grid("kikki-camera", 4, 2)
+        sheets["smoke"] = try grid("kikki-smoking")
+        sheets["hairHeart"] = try grid("kikki-hair-heart", 3, 2)
+        sheets["noodles"] = try grid("kikki-spicy-noodles", 3, 2)
+        let reels = try load("kikki-reels-variety"), reelsRows = [0,406,748,1086]
+        sheets["reels"] = try (0..<12).map { i in
+            let row = i / 4, col = i % 4, x = col * reels.width / 4
+            return try crop(reels, CGRect(x: x, y: reelsRows[row], width: (col + 1) * reels.width / 4 - x,
+                                          height: reelsRows[row + 1] - reelsRows[row]))
+        }
+        let extras = try load("kikki-cymbals-stretch"), extraRows = [0,530,887]
+        let extraColumns = [[0,467,877,1284,1774],[0,433,883,1352,1774]]
+        sheets["extra"] = try (0..<8).map { i in
+            let row = i / 4, col = i % 4
+            return try crop(extras, CGRect(x: extraColumns[row][col], y: extraRows[row],
+                                           width: extraColumns[row][col+1] - extraColumns[row][col],
+                                           height: extraRows[row+1] - extraRows[row]))
+        }
+        for key in ["camera", "reels", "smoke", "hairHeart", "noodles", "extra", "liftPose"] {
+            let frames = sheets[key]!
+            let factor = min(540 / frames.map { $0.silhouette.width }.max()!,
+                             520 / frames.map { $0.silhouette.height }.max()!)
+            sheets[key] = try frames.map { try aligned($0, factor: factor, center: 313.5, anchor: 590, top: false) }
+        }
+        banks[.twoD] = sheets
+
+    }
+
+    // Load and validate the entire bank before switching: a failed load keeps 2D intact.
+    func setStyle(_ requested: VisualStyle) throws {
+        guard requested != style else { return }
+        if banks[requested] == nil {
+            let root = directory.appendingPathComponent("rendered-3d")
+            let manifest = try JSONDecoder().decode(SpriteManifest.self, from: Data(contentsOf: root.appendingPathComponent("manifest.json")))
+            guard manifest.version == 1, manifest.frameSize == 627, manifest.frameCount == 257 else {
+                throw PetError.asset("3D manifest version or frame count")
+            }
+            var loaded: [String: [Sprite]] = [:]
+            var expected = banks[.twoD]!.mapValues { $0.count }
+            expected["transitionMid"] = 13
+            for (key, count) in [("walkSmooth",32),("glanceSmooth",32),("phoneSmooth",24),("heartSmooth",21),("pickupSmooth",13)] { expected[key] = count }
+            for (key, count) in expected {
+                guard let paths = manifest.sheets[key], paths.count == count else {
+                    throw PetError.asset("3D frames: \(key)")
+                }
+                loaded[key] = try paths.map { path in
+                    guard path.hasPrefix("frames/"), !path.contains("..") else { throw PetError.asset(path) }
+                    let url = root.appendingPathComponent(path)
+                    guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+                          let image = CGImageSourceCreateImageAtIndex(source, 0, nil), image.width == 627, image.height == 627 else {
+                        throw PetError.asset(path)
+                    }
+                    return try Sprite(image)
+                }
+            }
+            banks[requested] = loaded
+        }
+        sheets = banks[requested]!
+        style = requested
     }
 
     subscript(_ name: String, _ index: Int) -> Sprite { sheets[name]![index] }

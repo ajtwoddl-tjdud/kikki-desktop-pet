@@ -128,6 +128,7 @@ function Update-Roam([double]$t) {
         if ($script:pressed -or $t -lt $script:roam.pauseUntil) {
             $step=$script:roam.frameIndex
             $script:pet.Source=$script:walkLookCycle[$step]
+            if ($script:visualStyle -eq '3d') { $script:pet.Source=$script:glanceSmoothSprites[[int]$script:roam.smoothFrame] }
             $tr=$script:pet.RenderTransform.Children
             $tr[0].ScaleX=-$script:roam.direction; $tr[0].ScaleY=1
             $tr[1].Angle=$script:roam.strideAngle; $tr[2].X=0; $tr[2].Y=$script:roam.strideY; $tr[3].AngleX=0
@@ -137,6 +138,7 @@ function Update-Roam([double]$t) {
             $turn=[Math]::Min(1.0,($t-$script:roam.pausedAt)/0.1)
             if ($turn -lt 1 -and $script:motion) {
                 $script:restBlend.Source=$script:walkCycle[$step]
+                if ($script:visualStyle -eq '3d') { $script:restBlend.Source=$script:walkSmoothSprites[[int]$script:roam.smoothFrame] }
                 $script:restBlend.Opacity=1-$turn; $script:restBlend.Visibility='Visible'
                 $script:pet.Opacity=$turn
             }
@@ -176,9 +178,11 @@ function Update-Roam([double]$t) {
         } else { $script:window.Left=$script:roam.fromX+$script:roam.direction*$travel }
         # Distance drives the gait, including the gentle start and stop.
         $phase=($travel/56)%1
+        $script:roam.smoothFrame=[int][Math]::Floor($phase*32)
         $frameIndex=[int][Math]::Floor($phase*8)
         $script:roam.frameIndex=$frameIndex
         $script:pet.Source=$script:walkCycle[$frameIndex]
+        if ($script:visualStyle -eq '3d') { $script:pet.Source=$script:walkSmoothSprites[$script:roam.smoothFrame] }
         $transforms[0].ScaleX=-$script:roam.direction
         $transforms[2].Y=-0.6*(1-[Math]::Cos($phase*[Math]::PI*4))/2
         $transforms[1].Angle=0.4*[Math]::Sin($phase*[Math]::PI*2)

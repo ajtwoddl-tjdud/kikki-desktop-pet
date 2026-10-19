@@ -36,3 +36,14 @@ Intel 실기기와 macOS 12~15는 실행 검증하지 않았습니다. Control+M
 로컬 빌드가 앱과 ZIP을 생성합니다. GitHub Actions나 자동 릴리스는 사용하지 않습니다. 인터넷 배포 전에는 Universal 앱을 Developer ID로 서명·공증하는 별도 릴리스 과정이 필요합니다. 로컬 임시 서명만으로 Gatekeeper 검증을 통과했다고 간주하지 마세요.
 
 플랫폼 참고: [Apple의 Universal 바이너리 안내](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary), [AppKit 전체 화면 보조 창](https://developer.apple.com/documentation/appkit/nswindow/collectionbehavior-swift.struct/fullscreenauxiliary).
+
+
+## 2D / 3D 표시
+
+우클릭 또는 메뉴 막대 🐒 → **끼끼 모습 · 2D / 3D**에서 전환합니다. 선택은 `visualStyle` 설정에 저장됩니다. 새로 설치하면 2D로 시작합니다. 앱에 번들된 Blender 렌더 프레임을 사용하므로 별도 Blender 실행은 필요하지 않습니다.
+
+**특별 동작** 메뉴의 셀카·릴스·하트·라면·흡연·심벌즈·스트레칭도 두 모드에서 재생됩니다. 이 메뉴의 클립은 자동 동작으로 등록되지 않으며, 심벌즈 소리는 Mac에 추가하지 않았습니다.
+
+검사: `bash macos/build.sh --native`는 전체 3D 프레임 로딩·투명 여백·전환 즉시 갱신·동작 유지·숨김 중 일시 정지를 검사합니다. `KIKKI_PREVIEW_DIR=/절대/경로 bash macos/build.sh --native`로 앱 렌더러의 2D/3D 기본 동작 PNG도 저장할 수 있습니다.
+
+3D 자세 전환은 13개 실제 중간 포즈를 사용해 0.07초마다 갱신합니다. 자동 행동 간격은 2D와 동일합니다. 모드 변경 중인 전환도 경과 비율을 유지합니다.

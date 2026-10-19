@@ -22,6 +22,7 @@ final class PetView: NSView {
                 .foregroundColor: NSColor(calibratedRed: 0.29, green: 0.19, blue: 0.12, alpha: 1), .paragraphStyle: style]
     }()
     private struct RenderKey: Equatable {
+        let style: VisualStyle
         let sheet: String
         let index: Int
         let flipped: Bool
@@ -47,7 +48,7 @@ final class PetView: NSView {
     // Repaint only when something drawn actually changed. Pointer hit testing stays independent.
     @discardableResult func invalidateIfNeeded() -> Bool {
         let (sheet, index, flipped) = currentSprite()
-        let key = RenderKey(sheet: sheet, index: index, flipped: flipped,
+        let key = RenderKey(style: sprites.style, sheet: sheet, index: index, flipped: flipped,
                             breath: state.motion && sheet == "base" ? sin(state.time * 1.2) : 0,
                             phoneAge: state.dropStart.map { state.time - $0 },
                             sleepMark: state.activity == .sleep && state.motion && sheet == "base",
@@ -66,17 +67,30 @@ final class PetView: NSView {
     func currentSprite() -> (String, Int, Bool) {
         let t = state.time, mode = state.activity.rawValue
         if state.lifted { return ("lift", state.motion ? Int((t - state.liftStart) / 1.35 * 8) % 8 : 0, false) }
+        if let clip = state.assetClip {
+            if sprites.style == .threeD && state.motion && clip.sheet == "hairHeart" {
+                let phase = max(0, (t - clip.start) / clip.interval)
+                return ("heartSmooth", min(20, Int(phase * 4)), false)
+            }
+            return (clip.sheet, clip.frame(at: t), false)
+        }
         if t < state.sulkEnd { return ("landed", 0, false) }
         if let scene = state.transition {
-            let i = min(scene.route.count - 1, Int((t - scene.start) / 0.22))
+            let phase = max(0, (t - scene.start) / scene.stepDuration)
+            let i = min(scene.route.count - 1, Int(phase))
+            if sprites.style == .threeD, i + 1 < scene.route.count,
+               phase - floor(phase) >= 0.5,
+               let middle = PoseTransition.midpoint(from: scene.route[i], to: scene.route[i+1]) {
+                return ("transitionMid", middle, false)
+            }
             return ("transition", scene.route[i], false)
         }
         if let scene = state.walk {
             let age = t - scene.start - scene.pausedDuration - 1.1
-            if scene.pausedAt != nil { return ("glance", scene.frame, scene.direction > 0) }
+            if scene.pausedAt != nil { return (sprites.style == .threeD ? "glanceSmooth" : "glance", sprites.style == .threeD ? scene.smoothFrame : scene.frame, scene.direction > 0) }
             if age < 0 { return ("walkPose", 0, false) }
             if age >= scene.duration { return ("walkPose", 3, false) }
-            return ("walk", scene.frame, scene.direction > 0)
+            return (sprites.style == .threeD ? "walkSmooth" : "walk", sprites.style == .threeD ? scene.smoothFrame : scene.frame, scene.direction > 0)
         }
         if state.backEnd != nil {
             let age = t - state.peekStart
@@ -93,6 +107,12 @@ final class PetView: NSView {
             if age < 1.02 { return ("drop", 0, false) }
             if age < 1.55 { return ("drop", 2, false) }
             if age < 3.2 { return ("drop", 3, false) }
+            if sprites.style == .threeD && state.motion {
+                let starts = [3.2, 3.75, 4.2, 4.9]
+                let stage = age < 3.75 ? 0 : (age < 4.2 ? 1 : (age < 4.9 ? 2 : 3))
+                let sub = stage < 3 ? min(3, max(0, Int((age - starts[stage]) / (starts[stage+1] - starts[stage]) * 4))) : 0
+                return ("pickupSmooth", stage * 4 + sub, false)
+            }
             return ("pickup", age < 3.75 ? 0 : (age < 4.2 ? 1 : (age < 4.9 ? 2 : 3)), false)
         }
         if let start = state.restStart {
@@ -101,6 +121,9 @@ final class PetView: NSView {
         }
         if t < state.expressionEnd { return ("playful", mode, false) }
         if state.motion && state.activity != .sleep && t.truncatingRemainder(dividingBy: 4.7) < 0.14 { return ("blink", mode, false) }
+        if sprites.style == .threeD && state.motion && state.activity == .phone {
+            return ("phoneSmooth", Int(t / 0.1) % 24, false)
+        }
         return ("base", mode, false)
     }
 

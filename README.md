@@ -7,6 +7,16 @@
 
 **[Windows용 ZIP 다운로드](https://github.com/ajtwoddl-tjdud/kikki-desktop-pet/releases/latest/download/Kikki-Windows.zip)** · [릴리스 목록](https://github.com/ajtwoddl-tjdud/kikki-desktop-pet/releases)
 
+## 2D / 3D 모습 바꾸기
+
+끼끼를 우클릭하거나 Mac 메뉴 막대의 **🐒 → 끼끼 모습 · 2D / 3D**에서 **2D · 원래 끼끼** 또는 **3D · 말랑 끼끼**를 고릅니다. 활동과 진행 중인 동작은 유지되며 선택은 다음 실행에도 적용됩니다. 3D의 앉기·눕기 전환은 실제 중간 자세를 포함해 0.07초 단위로 재생하며, 다른 행동을 자동으로 고르는 간격은 기존과 같습니다. Windows도 같은 우클릭 메뉴를 사용합니다.
+
+3D 모드는 Blender에서 렌더링한 투명 PNG 동작 이미지를 재생합니다. 실시간 3D 엔진이나 Blender 설치 없이 실행되며, 원래의 2D 이미지는 보존됩니다. 기존 122개 프레임, 자세 전환 13개, 걷기·폰 보기·하트·폰 줍기용 122개를 포함한 총 257개 프레임을 제공합니다. 3D 파일을 읽지 못하면 시작 시 2D로 돌아가며, 실행 중 전환 실패 시 기존 모습이 유지됩니다.
+
+Mac의 **특별 동작** 메뉴에서도 셀카, 릴스 4종, 머리카락 하트, 매운 라면, 흡연, 심벌즈, 누운 스트레칭을 두 모습으로 재생할 수 있습니다. Mac의 특별 동작은 수동 재생이며 Windows의 전체 자동 동작·소리 정책과는 다릅니다.
+
+3D 원본·재생성 방법은 [3D 애셋 안내](assets/3d/README.md)를 참고하세요.
+
 ## Mac에서 실행하기
 
 **macOS 12 Monterey 이상, Apple Silicon·Intel Mac**용 네이티브 앱을 제공합니다. Windows PowerShell이나 별도 런타임은 필요하지 않습니다.
@@ -259,6 +269,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -STA -File .\Doongi.ps1 -SelfT
 | `Start.vbs`, `Enable-Hotkey.vbs` | 창을 숨겨 실행하는 런처 |
 | `assets/` | 캐릭터의 투명 PNG 동작 시트와 공통 대사 데이터 |
 
-이미지는 AI 이미지 생성 도구로 제작했습니다. 표정·동작 시트를 WPF에서 재생하는 2D 펫이며, 실제 게임이나 영상을 실행하거나 대화형 AI 서비스에 연결하지 않습니다.
+이미지는 AI 이미지 생성 도구로 제작했습니다. 표정·동작 시트를 WPF에서 재생하는 2D 펫이며, 실제 게임이나 영상을 실행하거나 대화형 AI 서비스에 연결하지 않습니다. 3D 모드의 이미지는 Blender 모델에서 렌더링합니다.
 
 타이머·렌더링 최적화와 측정 범위는 [OPTIMIZATION.md](OPTIMIZATION.md)에 정리했습니다.
+
+3D 걷기는 32프레임(고개 돌린 걷기도 32), 폰 보기는 24프레임 순환, 하트 만들기는 21프레임, 폰 줍기는 13프레임입니다. 기존 이동 거리·시간과 자동 활동 간격을 유지합니다.

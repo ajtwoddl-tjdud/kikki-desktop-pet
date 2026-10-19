@@ -1,0 +1,1853 @@
+[
+  {
+    "key": "base",
+    "index": 0,
+    "frame": 1,
+    "source": "doongi.png",
+    "file": "base-00.png"
+  },
+  {
+    "key": "base",
+    "index": 1,
+    "frame": 2,
+    "source": "doongi.png",
+    "file": "base-01.png"
+  },
+  {
+    "key": "base",
+    "index": 2,
+    "frame": 3,
+    "source": "doongi.png",
+    "file": "base-02.png"
+  },
+  {
+    "key": "base",
+    "index": 3,
+    "frame": 4,
+    "source": "doongi.png",
+    "file": "base-03.png"
+  },
+  {
+    "key": "blink",
+    "index": 0,
+    "frame": 5,
+    "source": "doongi-blink.png",
+    "file": "blink-00.png"
+  },
+  {
+    "key": "blink",
+    "index": 1,
+    "frame": 6,
+    "source": "doongi-blink.png",
+    "file": "blink-01.png"
+  },
+  {
+    "key": "blink",
+    "index": 2,
+    "frame": 7,
+    "source": "doongi-blink.png",
+    "file": "blink-02.png"
+  },
+  {
+    "key": "blink",
+    "index": 3,
+    "frame": 8,
+    "source": "doongi-blink.png",
+    "file": "blink-03.png"
+  },
+  {
+    "key": "look",
+    "index": 0,
+    "frame": 9,
+    "source": "doongi-look.png",
+    "file": "look-00.png"
+  },
+  {
+    "key": "look",
+    "index": 1,
+    "frame": 10,
+    "source": "doongi-look.png",
+    "file": "look-01.png"
+  },
+  {
+    "key": "look",
+    "index": 2,
+    "frame": 11,
+    "source": "doongi-look.png",
+    "file": "look-02.png"
+  },
+  {
+    "key": "look",
+    "index": 3,
+    "frame": 12,
+    "source": "doongi-look.png",
+    "file": "look-03.png"
+  },
+  {
+    "key": "playful",
+    "index": 0,
+    "frame": 13,
+    "source": "doongi-playful.png",
+    "file": "playful-00.png"
+  },
+  {
+    "key": "playful",
+    "index": 1,
+    "frame": 14,
+    "source": "doongi-playful.png",
+    "file": "playful-01.png"
+  },
+  {
+    "key": "playful",
+    "index": 2,
+    "frame": 15,
+    "source": "doongi-playful.png",
+    "file": "playful-02.png"
+  },
+  {
+    "key": "playful",
+    "index": 3,
+    "frame": 16,
+    "source": "doongi-playful.png",
+    "file": "playful-03.png"
+  },
+  {
+    "key": "walkPose",
+    "index": 0,
+    "frame": 17,
+    "source": "doongi-walk.png",
+    "file": "walkPose-00.png"
+  },
+  {
+    "key": "walkPose",
+    "index": 1,
+    "frame": 18,
+    "source": "doongi-walk.png",
+    "file": "walkPose-01.png"
+  },
+  {
+    "key": "walkPose",
+    "index": 2,
+    "frame": 19,
+    "source": "doongi-walk.png",
+    "file": "walkPose-02.png"
+  },
+  {
+    "key": "walkPose",
+    "index": 3,
+    "frame": 20,
+    "source": "doongi-walk.png",
+    "file": "walkPose-03.png"
+  },
+  {
+    "key": "back",
+    "index": 0,
+    "frame": 21,
+    "source": "doongi-back.png",
+    "file": "back-00.png"
+  },
+  {
+    "key": "back",
+    "index": 1,
+    "frame": 22,
+    "source": "doongi-back.png",
+    "file": "back-01.png"
+  },
+  {
+    "key": "back",
+    "index": 2,
+    "frame": 23,
+    "source": "doongi-back.png",
+    "file": "back-02.png"
+  },
+  {
+    "key": "back",
+    "index": 3,
+    "frame": 24,
+    "source": "doongi-back.png",
+    "file": "back-03.png"
+  },
+  {
+    "key": "rest",
+    "index": 0,
+    "frame": 25,
+    "source": "doongi-rest.png",
+    "file": "rest-00.png"
+  },
+  {
+    "key": "rest",
+    "index": 1,
+    "frame": 26,
+    "source": "doongi-rest.png",
+    "file": "rest-01.png"
+  },
+  {
+    "key": "rest",
+    "index": 2,
+    "frame": 27,
+    "source": "doongi-rest.png",
+    "file": "rest-02.png"
+  },
+  {
+    "key": "rest",
+    "index": 3,
+    "frame": 28,
+    "source": "doongi-rest.png",
+    "file": "rest-03.png"
+  },
+  {
+    "key": "rest",
+    "index": 4,
+    "frame": 29,
+    "source": "doongi-rest.png",
+    "file": "rest-04.png"
+  },
+  {
+    "key": "rest",
+    "index": 5,
+    "frame": 30,
+    "source": "doongi-rest.png",
+    "file": "rest-05.png"
+  },
+  {
+    "key": "walk",
+    "index": 0,
+    "frame": 31,
+    "source": "doongi-walk-cycle.png",
+    "file": "walk-00.png"
+  },
+  {
+    "key": "walk",
+    "index": 1,
+    "frame": 32,
+    "source": "doongi-walk-cycle.png",
+    "file": "walk-01.png"
+  },
+  {
+    "key": "walk",
+    "index": 2,
+    "frame": 33,
+    "source": "doongi-walk-cycle.png",
+    "file": "walk-02.png"
+  },
+  {
+    "key": "walk",
+    "index": 3,
+    "frame": 34,
+    "source": "doongi-walk-cycle.png",
+    "file": "walk-03.png"
+  },
+  {
+    "key": "walk",
+    "index": 4,
+    "frame": 35,
+    "source": "doongi-walk-cycle.png",
+    "file": "walk-04.png"
+  },
+  {
+    "key": "walk",
+    "index": 5,
+    "frame": 36,
+    "source": "doongi-walk-cycle.png",
+    "file": "walk-05.png"
+  },
+  {
+    "key": "walk",
+    "index": 6,
+    "frame": 37,
+    "source": "doongi-walk-cycle.png",
+    "file": "walk-06.png"
+  },
+  {
+    "key": "walk",
+    "index": 7,
+    "frame": 38,
+    "source": "doongi-walk-cycle.png",
+    "file": "walk-07.png"
+  },
+  {
+    "key": "glance",
+    "index": 0,
+    "frame": 39,
+    "source": "kikki-walk-glance.png",
+    "file": "glance-00.png"
+  },
+  {
+    "key": "glance",
+    "index": 1,
+    "frame": 40,
+    "source": "kikki-walk-glance.png",
+    "file": "glance-01.png"
+  },
+  {
+    "key": "glance",
+    "index": 2,
+    "frame": 41,
+    "source": "kikki-walk-glance.png",
+    "file": "glance-02.png"
+  },
+  {
+    "key": "glance",
+    "index": 3,
+    "frame": 42,
+    "source": "kikki-walk-glance.png",
+    "file": "glance-03.png"
+  },
+  {
+    "key": "glance",
+    "index": 4,
+    "frame": 43,
+    "source": "kikki-walk-glance.png",
+    "file": "glance-04.png"
+  },
+  {
+    "key": "glance",
+    "index": 5,
+    "frame": 44,
+    "source": "kikki-walk-glance.png",
+    "file": "glance-05.png"
+  },
+  {
+    "key": "glance",
+    "index": 6,
+    "frame": 45,
+    "source": "kikki-walk-glance.png",
+    "file": "glance-06.png"
+  },
+  {
+    "key": "glance",
+    "index": 7,
+    "frame": 46,
+    "source": "kikki-walk-glance.png",
+    "file": "glance-07.png"
+  },
+  {
+    "key": "drop",
+    "index": 0,
+    "frame": 47,
+    "source": "doongi-phone-drop.png",
+    "file": "drop-00.png"
+  },
+  {
+    "key": "drop",
+    "index": 1,
+    "frame": 48,
+    "source": "doongi-phone-drop.png",
+    "file": "drop-01.png"
+  },
+  {
+    "key": "drop",
+    "index": 2,
+    "frame": 49,
+    "source": "doongi-phone-drop.png",
+    "file": "drop-02.png"
+  },
+  {
+    "key": "drop",
+    "index": 3,
+    "frame": 50,
+    "source": "doongi-phone-drop.png",
+    "file": "drop-03.png"
+  },
+  {
+    "key": "pickup",
+    "index": 0,
+    "frame": 51,
+    "source": "doongi-pickup.png",
+    "file": "pickup-00.png"
+  },
+  {
+    "key": "pickup",
+    "index": 1,
+    "frame": 52,
+    "source": "doongi-pickup.png",
+    "file": "pickup-01.png"
+  },
+  {
+    "key": "pickup",
+    "index": 2,
+    "frame": 53,
+    "source": "doongi-pickup.png",
+    "file": "pickup-02.png"
+  },
+  {
+    "key": "pickup",
+    "index": 3,
+    "frame": 54,
+    "source": "doongi-pickup.png",
+    "file": "pickup-03.png"
+  },
+  {
+    "key": "lift",
+    "index": 0,
+    "frame": 55,
+    "source": "kikki-lift-cycle.png",
+    "file": "lift-00.png"
+  },
+  {
+    "key": "lift",
+    "index": 1,
+    "frame": 56,
+    "source": "kikki-lift-cycle.png",
+    "file": "lift-01.png"
+  },
+  {
+    "key": "lift",
+    "index": 2,
+    "frame": 57,
+    "source": "kikki-lift-cycle.png",
+    "file": "lift-02.png"
+  },
+  {
+    "key": "lift",
+    "index": 3,
+    "frame": 58,
+    "source": "kikki-lift-cycle.png",
+    "file": "lift-03.png"
+  },
+  {
+    "key": "lift",
+    "index": 4,
+    "frame": 59,
+    "source": "kikki-lift-cycle.png",
+    "file": "lift-04.png"
+  },
+  {
+    "key": "lift",
+    "index": 5,
+    "frame": 60,
+    "source": "kikki-lift-cycle.png",
+    "file": "lift-05.png"
+  },
+  {
+    "key": "lift",
+    "index": 6,
+    "frame": 61,
+    "source": "kikki-lift-cycle.png",
+    "file": "lift-06.png"
+  },
+  {
+    "key": "lift",
+    "index": 7,
+    "frame": 62,
+    "source": "kikki-lift-cycle.png",
+    "file": "lift-07.png"
+  },
+  {
+    "key": "liftPose",
+    "index": 0,
+    "frame": 63,
+    "source": "doongi-lift.png",
+    "file": "liftPose-00.png"
+  },
+  {
+    "key": "liftPose",
+    "index": 1,
+    "frame": 64,
+    "source": "doongi-lift.png",
+    "file": "liftPose-01.png"
+  },
+  {
+    "key": "liftPose",
+    "index": 2,
+    "frame": 65,
+    "source": "doongi-lift.png",
+    "file": "liftPose-02.png"
+  },
+  {
+    "key": "liftPose",
+    "index": 3,
+    "frame": 66,
+    "source": "doongi-lift.png",
+    "file": "liftPose-03.png"
+  },
+  {
+    "key": "transition",
+    "index": 0,
+    "frame": 67,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-00.png"
+  },
+  {
+    "key": "transition",
+    "index": 1,
+    "frame": 68,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-01.png"
+  },
+  {
+    "key": "transition",
+    "index": 2,
+    "frame": 69,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-02.png"
+  },
+  {
+    "key": "transition",
+    "index": 3,
+    "frame": 70,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-03.png"
+  },
+  {
+    "key": "transition",
+    "index": 4,
+    "frame": 71,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-04.png"
+  },
+  {
+    "key": "transition",
+    "index": 5,
+    "frame": 72,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-05.png"
+  },
+  {
+    "key": "transition",
+    "index": 6,
+    "frame": 73,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-06.png"
+  },
+  {
+    "key": "transition",
+    "index": 7,
+    "frame": 74,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-07.png"
+  },
+  {
+    "key": "transition",
+    "index": 8,
+    "frame": 75,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-08.png"
+  },
+  {
+    "key": "transition",
+    "index": 9,
+    "frame": 76,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-09.png"
+  },
+  {
+    "key": "transition",
+    "index": 10,
+    "frame": 77,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-10.png"
+  },
+  {
+    "key": "transition",
+    "index": 11,
+    "frame": 78,
+    "source": "kikki-posture-transitions.png",
+    "file": "transition-11.png"
+  },
+  {
+    "key": "camera",
+    "index": 0,
+    "frame": 79,
+    "source": "kikki-camera.png",
+    "file": "camera-00.png"
+  },
+  {
+    "key": "camera",
+    "index": 1,
+    "frame": 80,
+    "source": "kikki-camera.png",
+    "file": "camera-01.png"
+  },
+  {
+    "key": "camera",
+    "index": 2,
+    "frame": 81,
+    "source": "kikki-camera.png",
+    "file": "camera-02.png"
+  },
+  {
+    "key": "camera",
+    "index": 3,
+    "frame": 82,
+    "source": "kikki-camera.png",
+    "file": "camera-03.png"
+  },
+  {
+    "key": "camera",
+    "index": 4,
+    "frame": 83,
+    "source": "kikki-camera.png",
+    "file": "camera-04.png"
+  },
+  {
+    "key": "camera",
+    "index": 5,
+    "frame": 84,
+    "source": "kikki-camera.png",
+    "file": "camera-05.png"
+  },
+  {
+    "key": "camera",
+    "index": 6,
+    "frame": 85,
+    "source": "kikki-camera.png",
+    "file": "camera-06.png"
+  },
+  {
+    "key": "camera",
+    "index": 7,
+    "frame": 86,
+    "source": "kikki-camera.png",
+    "file": "camera-07.png"
+  },
+  {
+    "key": "reels",
+    "index": 0,
+    "frame": 87,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-00.png"
+  },
+  {
+    "key": "reels",
+    "index": 1,
+    "frame": 88,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-01.png"
+  },
+  {
+    "key": "reels",
+    "index": 2,
+    "frame": 89,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-02.png"
+  },
+  {
+    "key": "reels",
+    "index": 3,
+    "frame": 90,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-03.png"
+  },
+  {
+    "key": "reels",
+    "index": 4,
+    "frame": 91,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-04.png"
+  },
+  {
+    "key": "reels",
+    "index": 5,
+    "frame": 92,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-05.png"
+  },
+  {
+    "key": "reels",
+    "index": 6,
+    "frame": 93,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-06.png"
+  },
+  {
+    "key": "reels",
+    "index": 7,
+    "frame": 94,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-07.png"
+  },
+  {
+    "key": "reels",
+    "index": 8,
+    "frame": 95,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-08.png"
+  },
+  {
+    "key": "reels",
+    "index": 9,
+    "frame": 96,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-09.png"
+  },
+  {
+    "key": "reels",
+    "index": 10,
+    "frame": 97,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-10.png"
+  },
+  {
+    "key": "reels",
+    "index": 11,
+    "frame": 98,
+    "source": "kikki-reels-variety.png",
+    "file": "reels-11.png"
+  },
+  {
+    "key": "smoke",
+    "index": 0,
+    "frame": 99,
+    "source": "kikki-smoking.png",
+    "file": "smoke-00.png"
+  },
+  {
+    "key": "smoke",
+    "index": 1,
+    "frame": 100,
+    "source": "kikki-smoking.png",
+    "file": "smoke-01.png"
+  },
+  {
+    "key": "smoke",
+    "index": 2,
+    "frame": 101,
+    "source": "kikki-smoking.png",
+    "file": "smoke-02.png"
+  },
+  {
+    "key": "smoke",
+    "index": 3,
+    "frame": 102,
+    "source": "kikki-smoking.png",
+    "file": "smoke-03.png"
+  },
+  {
+    "key": "hairHeart",
+    "index": 0,
+    "frame": 103,
+    "source": "kikki-hair-heart.png",
+    "file": "hairHeart-00.png"
+  },
+  {
+    "key": "hairHeart",
+    "index": 1,
+    "frame": 104,
+    "source": "kikki-hair-heart.png",
+    "file": "hairHeart-01.png"
+  },
+  {
+    "key": "hairHeart",
+    "index": 2,
+    "frame": 105,
+    "source": "kikki-hair-heart.png",
+    "file": "hairHeart-02.png"
+  },
+  {
+    "key": "hairHeart",
+    "index": 3,
+    "frame": 106,
+    "source": "kikki-hair-heart.png",
+    "file": "hairHeart-03.png"
+  },
+  {
+    "key": "hairHeart",
+    "index": 4,
+    "frame": 107,
+    "source": "kikki-hair-heart.png",
+    "file": "hairHeart-04.png"
+  },
+  {
+    "key": "hairHeart",
+    "index": 5,
+    "frame": 108,
+    "source": "kikki-hair-heart.png",
+    "file": "hairHeart-05.png"
+  },
+  {
+    "key": "noodles",
+    "index": 0,
+    "frame": 109,
+    "source": "kikki-spicy-noodles.png",
+    "file": "noodles-00.png"
+  },
+  {
+    "key": "noodles",
+    "index": 1,
+    "frame": 110,
+    "source": "kikki-spicy-noodles.png",
+    "file": "noodles-01.png"
+  },
+  {
+    "key": "noodles",
+    "index": 2,
+    "frame": 111,
+    "source": "kikki-spicy-noodles.png",
+    "file": "noodles-02.png"
+  },
+  {
+    "key": "noodles",
+    "index": 3,
+    "frame": 112,
+    "source": "kikki-spicy-noodles.png",
+    "file": "noodles-03.png"
+  },
+  {
+    "key": "noodles",
+    "index": 4,
+    "frame": 113,
+    "source": "kikki-spicy-noodles.png",
+    "file": "noodles-04.png"
+  },
+  {
+    "key": "noodles",
+    "index": 5,
+    "frame": 114,
+    "source": "kikki-spicy-noodles.png",
+    "file": "noodles-05.png"
+  },
+  {
+    "key": "extra",
+    "index": 0,
+    "frame": 115,
+    "source": "kikki-cymbals-stretch.png",
+    "file": "extra-00.png"
+  },
+  {
+    "key": "extra",
+    "index": 1,
+    "frame": 116,
+    "source": "kikki-cymbals-stretch.png",
+    "file": "extra-01.png"
+  },
+  {
+    "key": "extra",
+    "index": 2,
+    "frame": 117,
+    "source": "kikki-cymbals-stretch.png",
+    "file": "extra-02.png"
+  },
+  {
+    "key": "extra",
+    "index": 3,
+    "frame": 118,
+    "source": "kikki-cymbals-stretch.png",
+    "file": "extra-03.png"
+  },
+  {
+    "key": "extra",
+    "index": 4,
+    "frame": 119,
+    "source": "kikki-cymbals-stretch.png",
+    "file": "extra-04.png"
+  },
+  {
+    "key": "extra",
+    "index": 5,
+    "frame": 120,
+    "source": "kikki-cymbals-stretch.png",
+    "file": "extra-05.png"
+  },
+  {
+    "key": "extra",
+    "index": 6,
+    "frame": 121,
+    "source": "kikki-cymbals-stretch.png",
+    "file": "extra-06.png"
+  },
+  {
+    "key": "extra",
+    "index": 7,
+    "frame": 122,
+    "source": "kikki-cymbals-stretch.png",
+    "file": "extra-07.png"
+  },
+  {
+    "key": "transitionMid",
+    "index": 0,
+    "frame": 123,
+    "source": null,
+    "file": "transitionMid-00.png",
+    "between": [
+      0,
+      1
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 1,
+    "frame": 124,
+    "source": null,
+    "file": "transitionMid-01.png",
+    "between": [
+      1,
+      2
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 2,
+    "frame": 125,
+    "source": null,
+    "file": "transitionMid-02.png",
+    "between": [
+      2,
+      3
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 3,
+    "frame": 126,
+    "source": null,
+    "file": "transitionMid-03.png",
+    "between": [
+      3,
+      4
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 4,
+    "frame": 127,
+    "source": null,
+    "file": "transitionMid-04.png",
+    "between": [
+      4,
+      5
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 5,
+    "frame": 128,
+    "source": null,
+    "file": "transitionMid-05.png",
+    "between": [
+      5,
+      6
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 6,
+    "frame": 129,
+    "source": null,
+    "file": "transitionMid-06.png",
+    "between": [
+      6,
+      7
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 7,
+    "frame": 130,
+    "source": null,
+    "file": "transitionMid-07.png",
+    "between": [
+      7,
+      8
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 8,
+    "frame": 131,
+    "source": null,
+    "file": "transitionMid-08.png",
+    "between": [
+      8,
+      9
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 9,
+    "frame": 132,
+    "source": null,
+    "file": "transitionMid-09.png",
+    "between": [
+      9,
+      10
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 10,
+    "frame": 133,
+    "source": null,
+    "file": "transitionMid-10.png",
+    "between": [
+      10,
+      11
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 11,
+    "frame": 134,
+    "source": null,
+    "file": "transitionMid-11.png",
+    "between": [
+      4,
+      7
+    ]
+  },
+  {
+    "key": "transitionMid",
+    "index": 12,
+    "frame": 135,
+    "source": null,
+    "file": "transitionMid-12.png",
+    "between": [
+      4,
+      6
+    ]
+  },
+  {
+    "key": "walkSmooth",
+    "index": 0,
+    "frame": 136,
+    "source": null,
+    "file": "walkSmooth-00.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 1,
+    "frame": 137,
+    "source": null,
+    "file": "walkSmooth-01.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 2,
+    "frame": 138,
+    "source": null,
+    "file": "walkSmooth-02.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 3,
+    "frame": 139,
+    "source": null,
+    "file": "walkSmooth-03.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 4,
+    "frame": 140,
+    "source": null,
+    "file": "walkSmooth-04.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 5,
+    "frame": 141,
+    "source": null,
+    "file": "walkSmooth-05.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 6,
+    "frame": 142,
+    "source": null,
+    "file": "walkSmooth-06.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 7,
+    "frame": 143,
+    "source": null,
+    "file": "walkSmooth-07.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 8,
+    "frame": 144,
+    "source": null,
+    "file": "walkSmooth-08.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 9,
+    "frame": 145,
+    "source": null,
+    "file": "walkSmooth-09.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 10,
+    "frame": 146,
+    "source": null,
+    "file": "walkSmooth-10.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 11,
+    "frame": 147,
+    "source": null,
+    "file": "walkSmooth-11.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 12,
+    "frame": 148,
+    "source": null,
+    "file": "walkSmooth-12.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 13,
+    "frame": 149,
+    "source": null,
+    "file": "walkSmooth-13.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 14,
+    "frame": 150,
+    "source": null,
+    "file": "walkSmooth-14.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 15,
+    "frame": 151,
+    "source": null,
+    "file": "walkSmooth-15.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 16,
+    "frame": 152,
+    "source": null,
+    "file": "walkSmooth-16.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 17,
+    "frame": 153,
+    "source": null,
+    "file": "walkSmooth-17.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 18,
+    "frame": 154,
+    "source": null,
+    "file": "walkSmooth-18.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 19,
+    "frame": 155,
+    "source": null,
+    "file": "walkSmooth-19.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 20,
+    "frame": 156,
+    "source": null,
+    "file": "walkSmooth-20.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 21,
+    "frame": 157,
+    "source": null,
+    "file": "walkSmooth-21.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 22,
+    "frame": 158,
+    "source": null,
+    "file": "walkSmooth-22.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 23,
+    "frame": 159,
+    "source": null,
+    "file": "walkSmooth-23.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 24,
+    "frame": 160,
+    "source": null,
+    "file": "walkSmooth-24.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 25,
+    "frame": 161,
+    "source": null,
+    "file": "walkSmooth-25.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 26,
+    "frame": 162,
+    "source": null,
+    "file": "walkSmooth-26.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 27,
+    "frame": 163,
+    "source": null,
+    "file": "walkSmooth-27.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 28,
+    "frame": 164,
+    "source": null,
+    "file": "walkSmooth-28.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 29,
+    "frame": 165,
+    "source": null,
+    "file": "walkSmooth-29.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 30,
+    "frame": 166,
+    "source": null,
+    "file": "walkSmooth-30.png"
+  },
+  {
+    "key": "walkSmooth",
+    "index": 31,
+    "frame": 167,
+    "source": null,
+    "file": "walkSmooth-31.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 0,
+    "frame": 168,
+    "source": null,
+    "file": "glanceSmooth-00.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 1,
+    "frame": 169,
+    "source": null,
+    "file": "glanceSmooth-01.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 2,
+    "frame": 170,
+    "source": null,
+    "file": "glanceSmooth-02.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 3,
+    "frame": 171,
+    "source": null,
+    "file": "glanceSmooth-03.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 4,
+    "frame": 172,
+    "source": null,
+    "file": "glanceSmooth-04.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 5,
+    "frame": 173,
+    "source": null,
+    "file": "glanceSmooth-05.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 6,
+    "frame": 174,
+    "source": null,
+    "file": "glanceSmooth-06.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 7,
+    "frame": 175,
+    "source": null,
+    "file": "glanceSmooth-07.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 8,
+    "frame": 176,
+    "source": null,
+    "file": "glanceSmooth-08.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 9,
+    "frame": 177,
+    "source": null,
+    "file": "glanceSmooth-09.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 10,
+    "frame": 178,
+    "source": null,
+    "file": "glanceSmooth-10.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 11,
+    "frame": 179,
+    "source": null,
+    "file": "glanceSmooth-11.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 12,
+    "frame": 180,
+    "source": null,
+    "file": "glanceSmooth-12.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 13,
+    "frame": 181,
+    "source": null,
+    "file": "glanceSmooth-13.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 14,
+    "frame": 182,
+    "source": null,
+    "file": "glanceSmooth-14.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 15,
+    "frame": 183,
+    "source": null,
+    "file": "glanceSmooth-15.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 16,
+    "frame": 184,
+    "source": null,
+    "file": "glanceSmooth-16.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 17,
+    "frame": 185,
+    "source": null,
+    "file": "glanceSmooth-17.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 18,
+    "frame": 186,
+    "source": null,
+    "file": "glanceSmooth-18.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 19,
+    "frame": 187,
+    "source": null,
+    "file": "glanceSmooth-19.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 20,
+    "frame": 188,
+    "source": null,
+    "file": "glanceSmooth-20.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 21,
+    "frame": 189,
+    "source": null,
+    "file": "glanceSmooth-21.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 22,
+    "frame": 190,
+    "source": null,
+    "file": "glanceSmooth-22.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 23,
+    "frame": 191,
+    "source": null,
+    "file": "glanceSmooth-23.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 24,
+    "frame": 192,
+    "source": null,
+    "file": "glanceSmooth-24.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 25,
+    "frame": 193,
+    "source": null,
+    "file": "glanceSmooth-25.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 26,
+    "frame": 194,
+    "source": null,
+    "file": "glanceSmooth-26.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 27,
+    "frame": 195,
+    "source": null,
+    "file": "glanceSmooth-27.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 28,
+    "frame": 196,
+    "source": null,
+    "file": "glanceSmooth-28.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 29,
+    "frame": 197,
+    "source": null,
+    "file": "glanceSmooth-29.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 30,
+    "frame": 198,
+    "source": null,
+    "file": "glanceSmooth-30.png"
+  },
+  {
+    "key": "glanceSmooth",
+    "index": 31,
+    "frame": 199,
+    "source": null,
+    "file": "glanceSmooth-31.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 0,
+    "frame": 200,
+    "source": null,
+    "file": "heartSmooth-00.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 1,
+    "frame": 201,
+    "source": null,
+    "file": "heartSmooth-01.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 2,
+    "frame": 202,
+    "source": null,
+    "file": "heartSmooth-02.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 3,
+    "frame": 203,
+    "source": null,
+    "file": "heartSmooth-03.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 4,
+    "frame": 204,
+    "source": null,
+    "file": "heartSmooth-04.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 5,
+    "frame": 205,
+    "source": null,
+    "file": "heartSmooth-05.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 6,
+    "frame": 206,
+    "source": null,
+    "file": "heartSmooth-06.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 7,
+    "frame": 207,
+    "source": null,
+    "file": "heartSmooth-07.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 8,
+    "frame": 208,
+    "source": null,
+    "file": "heartSmooth-08.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 9,
+    "frame": 209,
+    "source": null,
+    "file": "heartSmooth-09.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 10,
+    "frame": 210,
+    "source": null,
+    "file": "heartSmooth-10.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 11,
+    "frame": 211,
+    "source": null,
+    "file": "heartSmooth-11.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 12,
+    "frame": 212,
+    "source": null,
+    "file": "heartSmooth-12.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 13,
+    "frame": 213,
+    "source": null,
+    "file": "heartSmooth-13.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 14,
+    "frame": 214,
+    "source": null,
+    "file": "heartSmooth-14.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 15,
+    "frame": 215,
+    "source": null,
+    "file": "heartSmooth-15.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 16,
+    "frame": 216,
+    "source": null,
+    "file": "heartSmooth-16.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 17,
+    "frame": 217,
+    "source": null,
+    "file": "heartSmooth-17.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 18,
+    "frame": 218,
+    "source": null,
+    "file": "heartSmooth-18.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 19,
+    "frame": 219,
+    "source": null,
+    "file": "heartSmooth-19.png"
+  },
+  {
+    "key": "heartSmooth",
+    "index": 20,
+    "frame": 220,
+    "source": null,
+    "file": "heartSmooth-20.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 0,
+    "frame": 221,
+    "source": null,
+    "file": "pickupSmooth-00.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 1,
+    "frame": 222,
+    "source": null,
+    "file": "pickupSmooth-01.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 2,
+    "frame": 223,
+    "source": null,
+    "file": "pickupSmooth-02.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 3,
+    "frame": 224,
+    "source": null,
+    "file": "pickupSmooth-03.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 4,
+    "frame": 225,
+    "source": null,
+    "file": "pickupSmooth-04.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 5,
+    "frame": 226,
+    "source": null,
+    "file": "pickupSmooth-05.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 6,
+    "frame": 227,
+    "source": null,
+    "file": "pickupSmooth-06.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 7,
+    "frame": 228,
+    "source": null,
+    "file": "pickupSmooth-07.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 8,
+    "frame": 229,
+    "source": null,
+    "file": "pickupSmooth-08.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 9,
+    "frame": 230,
+    "source": null,
+    "file": "pickupSmooth-09.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 10,
+    "frame": 231,
+    "source": null,
+    "file": "pickupSmooth-10.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 11,
+    "frame": 232,
+    "source": null,
+    "file": "pickupSmooth-11.png"
+  },
+  {
+    "key": "pickupSmooth",
+    "index": 12,
+    "frame": 233,
+    "source": null,
+    "file": "pickupSmooth-12.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 0,
+    "frame": 234,
+    "source": null,
+    "file": "phoneSmooth-00.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 1,
+    "frame": 235,
+    "source": null,
+    "file": "phoneSmooth-01.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 2,
+    "frame": 236,
+    "source": null,
+    "file": "phoneSmooth-02.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 3,
+    "frame": 237,
+    "source": null,
+    "file": "phoneSmooth-03.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 4,
+    "frame": 238,
+    "source": null,
+    "file": "phoneSmooth-04.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 5,
+    "frame": 239,
+    "source": null,
+    "file": "phoneSmooth-05.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 6,
+    "frame": 240,
+    "source": null,
+    "file": "phoneSmooth-06.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 7,
+    "frame": 241,
+    "source": null,
+    "file": "phoneSmooth-07.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 8,
+    "frame": 242,
+    "source": null,
+    "file": "phoneSmooth-08.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 9,
+    "frame": 243,
+    "source": null,
+    "file": "phoneSmooth-09.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 10,
+    "frame": 244,
+    "source": null,
+    "file": "phoneSmooth-10.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 11,
+    "frame": 245,
+    "source": null,
+    "file": "phoneSmooth-11.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 12,
+    "frame": 246,
+    "source": null,
+    "file": "phoneSmooth-12.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 13,
+    "frame": 247,
+    "source": null,
+    "file": "phoneSmooth-13.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 14,
+    "frame": 248,
+    "source": null,
+    "file": "phoneSmooth-14.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 15,
+    "frame": 249,
+    "source": null,
+    "file": "phoneSmooth-15.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 16,
+    "frame": 250,
+    "source": null,
+    "file": "phoneSmooth-16.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 17,
+    "frame": 251,
+    "source": null,
+    "file": "phoneSmooth-17.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 18,
+    "frame": 252,
+    "source": null,
+    "file": "phoneSmooth-18.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 19,
+    "frame": 253,
+    "source": null,
+    "file": "phoneSmooth-19.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 20,
+    "frame": 254,
+    "source": null,
+    "file": "phoneSmooth-20.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 21,
+    "frame": 255,
+    "source": null,
+    "file": "phoneSmooth-21.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 22,
+    "frame": 256,
+    "source": null,
+    "file": "phoneSmooth-22.png"
+  },
+  {
+    "key": "phoneSmooth",
+    "index": 23,
+    "frame": 257,
+    "source": null,
+    "file": "phoneSmooth-23.png"
+  }
+]

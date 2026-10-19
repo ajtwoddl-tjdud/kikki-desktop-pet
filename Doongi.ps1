@@ -289,7 +289,9 @@ function Animate-Pet([double]$t) {
         }
     }
     if ($closed -and $script:mode -ne 2) { $script:pet.Source=$script:blinkSprites[$script:mode] }
-    else { $script:pet.Source=$script:sprites[$script:mode] }
+    else { $script:pet.Source=$script:sprites[$script:mode]
+        if ($script:visualStyle -eq '3d' -and $script:motion -and $script:mode -eq 1) { $script:pet.Source=$script:phoneSmoothSprites[([int][Math]::Floor($t/0.1)%24)] }
+    }
     if ((Get-DueDetail $t) -eq 'expression') {
         Play-Expression $t
         if ($script:mode -eq 3) { Say-Random 'gameCheer' } else { Say-Random 'playful' }
@@ -484,6 +486,7 @@ function Keep-OnScreen {
 . (Join-Path $PSScriptRoot 'Pomodoro.ps1')
 . (Join-Path $PSScriptRoot 'Chaos.ps1')
 . (Join-Path $PSScriptRoot 'Extras.ps1')
+. (Join-Path $PSScriptRoot 'VisualStyle.ps1')
 Set-Pose 1 -Immediate
 $area = [System.Windows.SystemParameters]::WorkArea
 $window.Left = $area.Right - $window.Width - 24
@@ -630,6 +633,7 @@ Add-Menu '크기 바꾸기 · 작게 / 크게' {
     Keep-OnScreen
 }
 Add-Menu '끼끼 퇴근' { $script:window.Close() }
+Add-VisualStyleMenu
 $pet.ContextMenu = $menu
 function Toggle-PetVisibility {
     if ($null -ne $script:pomoDialog) { $script:pomoDialog.Close() }
@@ -944,6 +948,8 @@ if ($SelfTest) {
     $window.ShowActivated=$false
     $window.Show()
     . (Join-Path $PSScriptRoot 'Pomodoro.Tests.ps1')
+    . (Join-Path $PSScriptRoot 'VisualStyle.Tests.ps1')
+    Invoke-VisualStyleSelfTest
     Invoke-PomodoroSelfTest
     $script:classEnd=[DateTime]::Now.AddMinutes(20)
     $savedClassEnd=$script:classEnd

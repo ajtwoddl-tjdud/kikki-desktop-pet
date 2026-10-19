@@ -25,6 +25,7 @@ struct Walk {
     var pauseUntil = 0.0
     var pausedDuration = 0.0
     var frame = 0
+    var smoothFrame = 0
     var duration: Double { abs(to - from) / 104 + 0.45 }
     var direction: Double { to > from ? 1 : -1 }
 
@@ -51,6 +52,14 @@ struct Walk {
 struct PoseTransition {
     let start: Double
     let route: [Int]
+    var stepDuration: Double = 0.22
+    var duration: Double { Double(route.count) * stepDuration + (stepDuration < 0.22 ? 0.15 : 0.3) }
+    static func midpoint(from: Int, to: Int) -> Int? {
+        if abs(from - to) == 1 { return min(from, to) }
+        if Set([from, to]) == Set([4, 7]) { return 11 }
+        if Set([from, to]) == Set([4, 6]) { return 12 }
+        return nil
+    }
     static func route(from: Activity, to: Activity) -> [Int] {
         if from == to { return [] }
         if from == .sleep && to == .phone { return [11,10,9,8,7,4,5] }
@@ -63,7 +72,20 @@ struct PoseTransition {
     }
 }
 
+struct AssetClip {
+    let sheet: String
+    let frames: [Int]
+    let start: Double
+    let interval: Double
+    var duration: Double { Double(frames.count) * interval }
+    func frame(at time: Double) -> Int {
+        frames[min(frames.count - 1, max(0, Int((time - start) / interval)))]
+    }
+}
+
 final class PetState {
+    private(set) var uses3DTransitions = false
+    var assetClip: AssetClip?
     var activity = Activity.phone
     var previousActivity: Activity?
     var automatic = true
@@ -100,7 +122,7 @@ final class PetState {
     var pendingClassEnd = false
 
     var busy: Bool {
-        pressed || dragging || walk != nil || transition != nil || restStart != nil ||
+        assetClip != nil || pressed || dragging || walk != nil || transition != nil || restStart != nil ||
         dropStart != nil || backEnd != nil || time < attentionEnd || time < sulkEnd || time < expressionEnd
     }
 
@@ -138,11 +160,31 @@ final class PetState {
         nextChange = time + target.duration
         attentionEnd = 0
         sulkEnd = 0
-        if motion && animate && !route.isEmpty { transition = PoseTransition(start: time, route: route) }
-        quietUntil = max(quietUntil, time + (transition == nil ? 2 : Double(route.count) * 0.22 + 2.3))
+        if motion && animate && !route.isEmpty { transition = PoseTransition(start: time, route: route, stepDuration: uses3DTransitions ? 0.14 : 0.22) }
+        quietUntil = max(quietUntil, time + (transition == nil ? 2 : (transition?.duration ?? 0) + 2))
+    }
+
+    func set3DTransitions(_ enabled: Bool) {
+        guard uses3DTransitions != enabled else { return }
+        if let scene = transition {
+            let phase = (time - scene.start) / scene.stepDuration
+            let step = enabled ? 0.14 : 0.22
+            transition = PoseTransition(start: time - phase * step, route: scene.route, stepDuration: step)
+        }
+        uses3DTransitions = enabled
+    }
+
+    func playAsset(sheet: String, frames: [Int], interval: Double = 0.55) {
+        guard !frames.isEmpty, interval > 0 else { return }
+        clearScene()
+        motion = true
+        attentionEnd = 0; sulkEnd = 0
+        assetClip = AssetClip(sheet: sheet, frames: frames, start: time, interval: interval)
+        quietUntil = time + Double(frames.count) * interval + 3
     }
 
     func clearScene() {
+        assetClip = nil
         walk = nil; restStart = nil; dropStart = nil; backEnd = nil; transition = nil
         expressionEnd = 0; memeFaceEnd = 0; dropSpoke = false
     }
@@ -193,7 +235,8 @@ final class PetState {
         }
         guard visible else { return nil }
         time += max(0, delta)
-        if let scene = transition, time - scene.start >= Double(scene.route.count) * 0.22 + 0.3 { transition = nil }
+        if let clip = assetClip, time - clip.start >= clip.duration { assetClip = nil }
+        if let scene = transition, time - scene.start >= scene.duration { transition = nil }
         if let start = restStart, time - start >= [4.3,25.3,90.3,4.3][activity.rawValue] { restStart = nil }
         if let start = dropStart {
             if time - start >= 1.55 && !dropSpoke {
@@ -213,6 +256,7 @@ final class PetState {
             let age = time - scene.start - scene.pausedDuration - 1.1
             let travel = Walk.distance(at: age, total: abs(scene.to - scene.from), duration: scene.duration)
             position = scene.from + scene.direction * travel
+            scene.smoothFrame = Int((travel / 56).truncatingRemainder(dividingBy: 1) * 32)
             scene.frame = Int((travel / 56).truncatingRemainder(dividingBy: 1) * 8)
             walk = scene
             if age >= scene.duration + 0.8 {

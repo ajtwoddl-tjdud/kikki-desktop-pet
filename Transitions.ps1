@@ -43,7 +43,9 @@ function Start-PostureTransition([int]$from,[int]$to,[double]$t,$previous) {
  if (-not $script:motion -or $null -eq $previous) { return }
  $route=@(Get-PostureRoute $from $to)
  if ($route.Count -eq 0) { return }
- $script:poseTransition=@{start=$t;route=$route;previous=$previous;target=$script:sprites[$to];duration=$route.Count*0.22+0.3}
+ $step=if ($script:visualStyle -eq '3d') {0.14} else {0.22}
+ $fade=if ($script:visualStyle -eq '3d') {0.15} else {0.3}
+ $script:poseTransition=@{start=$t;route=$route;previous=$previous;target=$script:sprites[$to];step=$step;fade=$fade;duration=$route.Count*$step+$fade}
  $script:quietUntil=[Math]::Max($script:quietUntil,$t+$script:poseTransition.duration+3)
 }
 function Render-PostureTransition([double]$t) {
@@ -52,15 +54,26 @@ function Render-PostureTransition([double]$t) {
  $scene=$script:poseTransition; $age=[Math]::Max(0.0,$t-$scene.start)
  if ($script:chaosEnabled) { $age*=3.0 }
  if ($age -ge $scene.duration) { $script:poseTransition=$null; return }
- $frameTime=$scene.route.Count*0.22
- $index=[Math]::Min($scene.route.Count-1,[int][Math]::Floor($age/0.22))
+ $step=if ($null -ne $scene.step) {[double]$scene.step} else {0.22}
+ $fade=if ($null -ne $scene.fade) {[double]$scene.fade} else {0.3}
+ $frameTime=$scene.route.Count*$step
+ $phase=$age/$step
+ $index=[Math]::Min($scene.route.Count-1,[int][Math]::Floor($phase))
  $script:pet.Source=$script:transitionSprites[$scene.route[$index]]
+ if ($script:visualStyle -eq '3d' -and $index+1 -lt $scene.route.Count -and $phase-[Math]::Floor($phase) -ge 0.5) {
+  $a=$scene.route[$index]; $b=$scene.route[$index+1]; $mid=-1
+  if ([Math]::Abs($a-$b) -eq 1) { $mid=[Math]::Min($a,$b) }
+  elseif (($a -eq 4 -and $b -eq 7) -or ($a -eq 7 -and $b -eq 4)) { $mid=11 }
+  elseif (($a -eq 4 -and $b -eq 6) -or ($a -eq 6 -and $b -eq 4)) { $mid=12 }
+  if ($mid -ge 0) { $script:pet.Source=$script:transitionMidSprites[$mid] }
+ }
  $script:pet.Opacity=1
+ $script:restBlend.Visibility='Hidden'
  if ($age -lt 0.15) {
   $script:restBlend.Source=$scene.previous; $script:restBlend.Opacity=1-$age/0.15
   $script:restBlend.Visibility='Visible'; $script:pet.Opacity=$age/0.15
  } elseif ($age -ge $frameTime) {
-  $p=($age-$frameTime)/0.3
+  $p=($age-$frameTime)/$fade
   $script:restBlend.Source=$script:pet.Source; $script:restBlend.Opacity=1-$p
   $script:restBlend.Visibility='Visible'; $script:pet.Source=$scene.target; $script:pet.Opacity=$p
  }

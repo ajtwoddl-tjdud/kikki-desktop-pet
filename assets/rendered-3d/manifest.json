@@ -1,0 +1,1274 @@
+{
+  "version": 1,
+  "renderer": "Blender EEVEE",
+  "frameSize": 627,
+  "sheets": {
+    "base": [
+      "frames/base-00.png",
+      "frames/base-01.png",
+      "frames/base-02.png",
+      "frames/base-03.png"
+    ],
+    "blink": [
+      "frames/blink-00.png",
+      "frames/blink-01.png",
+      "frames/blink-02.png",
+      "frames/blink-03.png"
+    ],
+    "look": [
+      "frames/look-00.png",
+      "frames/look-01.png",
+      "frames/look-02.png",
+      "frames/look-03.png"
+    ],
+    "playful": [
+      "frames/playful-00.png",
+      "frames/playful-01.png",
+      "frames/playful-02.png",
+      "frames/playful-03.png"
+    ],
+    "walkPose": [
+      "frames/walkPose-00.png",
+      "frames/walkPose-01.png",
+      "frames/walkPose-02.png",
+      "frames/walkPose-03.png"
+    ],
+    "back": [
+      "frames/back-00.png",
+      "frames/back-01.png",
+      "frames/back-02.png",
+      "frames/back-03.png"
+    ],
+    "rest": [
+      "frames/rest-00.png",
+      "frames/rest-01.png",
+      "frames/rest-02.png",
+      "frames/rest-03.png",
+      "frames/rest-04.png",
+      "frames/rest-05.png"
+    ],
+    "walk": [
+      "frames/walk-00.png",
+      "frames/walk-01.png",
+      "frames/walk-02.png",
+      "frames/walk-03.png",
+      "frames/walk-04.png",
+      "frames/walk-05.png",
+      "frames/walk-06.png",
+      "frames/walk-07.png"
+    ],
+    "glance": [
+      "frames/glance-00.png",
+      "frames/glance-01.png",
+      "frames/glance-02.png",
+      "frames/glance-03.png",
+      "frames/glance-04.png",
+      "frames/glance-05.png",
+      "frames/glance-06.png",
+      "frames/glance-07.png"
+    ],
+    "drop": [
+      "frames/drop-00.png",
+      "frames/drop-01.png",
+      "frames/drop-02.png",
+      "frames/drop-03.png"
+    ],
+    "pickup": [
+      "frames/pickup-00.png",
+      "frames/pickup-01.png",
+      "frames/pickup-02.png",
+      "frames/pickup-03.png"
+    ],
+    "lift": [
+      "frames/lift-00.png",
+      "frames/lift-01.png",
+      "frames/lift-02.png",
+      "frames/lift-03.png",
+      "frames/lift-04.png",
+      "frames/lift-05.png",
+      "frames/lift-06.png",
+      "frames/lift-07.png"
+    ],
+    "liftPose": [
+      "frames/liftPose-00.png",
+      "frames/liftPose-01.png",
+      "frames/liftPose-02.png",
+      "frames/liftPose-03.png"
+    ],
+    "transition": [
+      "frames/transition-00.png",
+      "frames/transition-01.png",
+      "frames/transition-02.png",
+      "frames/transition-03.png",
+      "frames/transition-04.png",
+      "frames/transition-05.png",
+      "frames/transition-06.png",
+      "frames/transition-07.png",
+      "frames/transition-08.png",
+      "frames/transition-09.png",
+      "frames/transition-10.png",
+      "frames/transition-11.png"
+    ],
+    "camera": [
+      "frames/camera-00.png",
+      "frames/camera-01.png",
+      "frames/camera-02.png",
+      "frames/camera-03.png",
+      "frames/camera-04.png",
+      "frames/camera-05.png",
+      "frames/camera-06.png",
+      "frames/camera-07.png"
+    ],
+    "reels": [
+      "frames/reels-00.png",
+      "frames/reels-01.png",
+      "frames/reels-02.png",
+      "frames/reels-03.png",
+      "frames/reels-04.png",
+      "frames/reels-05.png",
+      "frames/reels-06.png",
+      "frames/reels-07.png",
+      "frames/reels-08.png",
+      "frames/reels-09.png",
+      "frames/reels-10.png",
+      "frames/reels-11.png"
+    ],
+    "smoke": [
+      "frames/smoke-00.png",
+      "frames/smoke-01.png",
+      "frames/smoke-02.png",
+      "frames/smoke-03.png"
+    ],
+    "hairHeart": [
+      "frames/hairHeart-00.png",
+      "frames/hairHeart-01.png",
+      "frames/hairHeart-02.png",
+      "frames/hairHeart-03.png",
+      "frames/hairHeart-04.png",
+      "frames/hairHeart-05.png"
+    ],
+    "noodles": [
+      "frames/noodles-00.png",
+      "frames/noodles-01.png",
+      "frames/noodles-02.png",
+      "frames/noodles-03.png",
+      "frames/noodles-04.png",
+      "frames/noodles-05.png"
+    ],
+    "extra": [
+      "frames/extra-00.png",
+      "frames/extra-01.png",
+      "frames/extra-02.png",
+      "frames/extra-03.png",
+      "frames/extra-04.png",
+      "frames/extra-05.png",
+      "frames/extra-06.png",
+      "frames/extra-07.png"
+    ],
+    "transitionMid": [
+      "frames/transitionMid-00.png",
+      "frames/transitionMid-01.png",
+      "frames/transitionMid-02.png",
+      "frames/transitionMid-03.png",
+      "frames/transitionMid-04.png",
+      "frames/transitionMid-05.png",
+      "frames/transitionMid-06.png",
+      "frames/transitionMid-07.png",
+      "frames/transitionMid-08.png",
+      "frames/transitionMid-09.png",
+      "frames/transitionMid-10.png",
+      "frames/transitionMid-11.png",
+      "frames/transitionMid-12.png"
+    ],
+    "walkSmooth": [
+      "frames/walkSmooth-00.png",
+      "frames/walkSmooth-01.png",
+      "frames/walkSmooth-02.png",
+      "frames/walkSmooth-03.png",
+      "frames/walkSmooth-04.png",
+      "frames/walkSmooth-05.png",
+      "frames/walkSmooth-06.png",
+      "frames/walkSmooth-07.png",
+      "frames/walkSmooth-08.png",
+      "frames/walkSmooth-09.png",
+      "frames/walkSmooth-10.png",
+      "frames/walkSmooth-11.png",
+      "frames/walkSmooth-12.png",
+      "frames/walkSmooth-13.png",
+      "frames/walkSmooth-14.png",
+      "frames/walkSmooth-15.png",
+      "frames/walkSmooth-16.png",
+      "frames/walkSmooth-17.png",
+      "frames/walkSmooth-18.png",
+      "frames/walkSmooth-19.png",
+      "frames/walkSmooth-20.png",
+      "frames/walkSmooth-21.png",
+      "frames/walkSmooth-22.png",
+      "frames/walkSmooth-23.png",
+      "frames/walkSmooth-24.png",
+      "frames/walkSmooth-25.png",
+      "frames/walkSmooth-26.png",
+      "frames/walkSmooth-27.png",
+      "frames/walkSmooth-28.png",
+      "frames/walkSmooth-29.png",
+      "frames/walkSmooth-30.png",
+      "frames/walkSmooth-31.png"
+    ],
+    "glanceSmooth": [
+      "frames/glanceSmooth-00.png",
+      "frames/glanceSmooth-01.png",
+      "frames/glanceSmooth-02.png",
+      "frames/glanceSmooth-03.png",
+      "frames/glanceSmooth-04.png",
+      "frames/glanceSmooth-05.png",
+      "frames/glanceSmooth-06.png",
+      "frames/glanceSmooth-07.png",
+      "frames/glanceSmooth-08.png",
+      "frames/glanceSmooth-09.png",
+      "frames/glanceSmooth-10.png",
+      "frames/glanceSmooth-11.png",
+      "frames/glanceSmooth-12.png",
+      "frames/glanceSmooth-13.png",
+      "frames/glanceSmooth-14.png",
+      "frames/glanceSmooth-15.png",
+      "frames/glanceSmooth-16.png",
+      "frames/glanceSmooth-17.png",
+      "frames/glanceSmooth-18.png",
+      "frames/glanceSmooth-19.png",
+      "frames/glanceSmooth-20.png",
+      "frames/glanceSmooth-21.png",
+      "frames/glanceSmooth-22.png",
+      "frames/glanceSmooth-23.png",
+      "frames/glanceSmooth-24.png",
+      "frames/glanceSmooth-25.png",
+      "frames/glanceSmooth-26.png",
+      "frames/glanceSmooth-27.png",
+      "frames/glanceSmooth-28.png",
+      "frames/glanceSmooth-29.png",
+      "frames/glanceSmooth-30.png",
+      "frames/glanceSmooth-31.png"
+    ],
+    "phoneSmooth": [
+      "frames/phoneSmooth-00.png",
+      "frames/phoneSmooth-01.png",
+      "frames/phoneSmooth-02.png",
+      "frames/phoneSmooth-03.png",
+      "frames/phoneSmooth-04.png",
+      "frames/phoneSmooth-05.png",
+      "frames/phoneSmooth-06.png",
+      "frames/phoneSmooth-07.png",
+      "frames/phoneSmooth-08.png",
+      "frames/phoneSmooth-09.png",
+      "frames/phoneSmooth-10.png",
+      "frames/phoneSmooth-11.png",
+      "frames/phoneSmooth-12.png",
+      "frames/phoneSmooth-13.png",
+      "frames/phoneSmooth-14.png",
+      "frames/phoneSmooth-15.png",
+      "frames/phoneSmooth-16.png",
+      "frames/phoneSmooth-17.png",
+      "frames/phoneSmooth-18.png",
+      "frames/phoneSmooth-19.png",
+      "frames/phoneSmooth-20.png",
+      "frames/phoneSmooth-21.png",
+      "frames/phoneSmooth-22.png",
+      "frames/phoneSmooth-23.png"
+    ],
+    "heartSmooth": [
+      "frames/heartSmooth-00.png",
+      "frames/heartSmooth-01.png",
+      "frames/heartSmooth-02.png",
+      "frames/heartSmooth-03.png",
+      "frames/heartSmooth-04.png",
+      "frames/heartSmooth-05.png",
+      "frames/heartSmooth-06.png",
+      "frames/heartSmooth-07.png",
+      "frames/heartSmooth-08.png",
+      "frames/heartSmooth-09.png",
+      "frames/heartSmooth-10.png",
+      "frames/heartSmooth-11.png",
+      "frames/heartSmooth-12.png",
+      "frames/heartSmooth-13.png",
+      "frames/heartSmooth-14.png",
+      "frames/heartSmooth-15.png",
+      "frames/heartSmooth-16.png",
+      "frames/heartSmooth-17.png",
+      "frames/heartSmooth-18.png",
+      "frames/heartSmooth-19.png",
+      "frames/heartSmooth-20.png"
+    ],
+    "pickupSmooth": [
+      "frames/pickupSmooth-00.png",
+      "frames/pickupSmooth-01.png",
+      "frames/pickupSmooth-02.png",
+      "frames/pickupSmooth-03.png",
+      "frames/pickupSmooth-04.png",
+      "frames/pickupSmooth-05.png",
+      "frames/pickupSmooth-06.png",
+      "frames/pickupSmooth-07.png",
+      "frames/pickupSmooth-08.png",
+      "frames/pickupSmooth-09.png",
+      "frames/pickupSmooth-10.png",
+      "frames/pickupSmooth-11.png",
+      "frames/pickupSmooth-12.png"
+    ],
+    "landed": [
+      "frames/liftPose-03.png"
+    ]
+  },
+  "atlases": [
+    {
+      "source": "doongi.png",
+      "key": "base",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          627,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "doongi-blink.png",
+      "key": "blink",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          627,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "doongi-look.png",
+      "key": "look",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          627,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "doongi-playful.png",
+      "key": "playful",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          627,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "doongi-walk.png",
+      "key": "walkPose",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          627,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "doongi-back.png",
+      "key": "back",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          627,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "doongi-rest.png",
+      "key": "rest",
+      "count": 6,
+      "size": [
+        1536,
+        1024
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          1024,
+          512
+        ],
+        [
+          1024,
+          0,
+          1536,
+          512
+        ],
+        [
+          0,
+          512,
+          512,
+          1024
+        ],
+        [
+          512,
+          512,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          512,
+          1536,
+          1024
+        ]
+      ]
+    },
+    {
+      "source": "doongi-walk-cycle.png",
+      "key": "walk",
+      "count": 8,
+      "size": [
+        1774,
+        887
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          443,
+          443
+        ],
+        [
+          443,
+          0,
+          887,
+          443
+        ],
+        [
+          887,
+          0,
+          1330,
+          443
+        ],
+        [
+          1330,
+          0,
+          1774,
+          443
+        ],
+        [
+          0,
+          443,
+          443,
+          887
+        ],
+        [
+          443,
+          443,
+          887,
+          887
+        ],
+        [
+          887,
+          443,
+          1330,
+          887
+        ],
+        [
+          1330,
+          443,
+          1774,
+          887
+        ]
+      ]
+    },
+    {
+      "source": "kikki-walk-glance.png",
+      "key": "glance",
+      "count": 8,
+      "size": [
+        1774,
+        887
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          443,
+          443
+        ],
+        [
+          443,
+          0,
+          887,
+          443
+        ],
+        [
+          887,
+          0,
+          1330,
+          443
+        ],
+        [
+          1330,
+          0,
+          1774,
+          443
+        ],
+        [
+          0,
+          443,
+          443,
+          887
+        ],
+        [
+          443,
+          443,
+          887,
+          887
+        ],
+        [
+          887,
+          443,
+          1330,
+          887
+        ],
+        [
+          1330,
+          443,
+          1774,
+          887
+        ]
+      ]
+    },
+    {
+      "source": "doongi-phone-drop.png",
+      "key": "drop",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          659,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          659,
+          1254
+        ],
+        [
+          659,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "doongi-pickup.png",
+      "key": "pickup",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          640,
+          627
+        ],
+        [
+          640,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "kikki-lift-cycle.png",
+      "key": "lift",
+      "count": 8,
+      "size": [
+        1774,
+        887
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          462,
+          443
+        ],
+        [
+          462,
+          0,
+          887,
+          443
+        ],
+        [
+          887,
+          0,
+          1318,
+          443
+        ],
+        [
+          1318,
+          0,
+          1774,
+          443
+        ],
+        [
+          0,
+          443,
+          462,
+          887
+        ],
+        [
+          462,
+          443,
+          887,
+          887
+        ],
+        [
+          887,
+          443,
+          1318,
+          887
+        ],
+        [
+          1318,
+          443,
+          1774,
+          887
+        ]
+      ]
+    },
+    {
+      "source": "doongi-lift.png",
+      "key": "liftPose",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          627,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          645,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "kikki-posture-transitions.png",
+      "key": "transition",
+      "count": 12,
+      "size": [
+        1448,
+        1086
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          344,
+          436
+        ],
+        [
+          344,
+          0,
+          693,
+          436
+        ],
+        [
+          693,
+          0,
+          1062,
+          436
+        ],
+        [
+          1062,
+          0,
+          1448,
+          436
+        ],
+        [
+          0,
+          436,
+          368,
+          770
+        ],
+        [
+          368,
+          436,
+          729,
+          770
+        ],
+        [
+          729,
+          436,
+          1092,
+          770
+        ],
+        [
+          1092,
+          436,
+          1448,
+          770
+        ],
+        [
+          0,
+          770,
+          378,
+          1086
+        ],
+        [
+          378,
+          770,
+          724,
+          1086
+        ],
+        [
+          724,
+          770,
+          1086,
+          1086
+        ],
+        [
+          1086,
+          770,
+          1448,
+          1086
+        ]
+      ]
+    },
+    {
+      "source": "kikki-camera.png",
+      "key": "camera",
+      "count": 8,
+      "size": [
+        1774,
+        887
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          443,
+          443
+        ],
+        [
+          443,
+          0,
+          887,
+          443
+        ],
+        [
+          887,
+          0,
+          1330,
+          443
+        ],
+        [
+          1330,
+          0,
+          1774,
+          443
+        ],
+        [
+          0,
+          443,
+          443,
+          887
+        ],
+        [
+          443,
+          443,
+          887,
+          887
+        ],
+        [
+          887,
+          443,
+          1330,
+          887
+        ],
+        [
+          1330,
+          443,
+          1774,
+          887
+        ]
+      ]
+    },
+    {
+      "source": "kikki-reels-variety.png",
+      "key": "reels",
+      "count": 12,
+      "size": [
+        1448,
+        1086
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          362,
+          406
+        ],
+        [
+          362,
+          0,
+          724,
+          406
+        ],
+        [
+          724,
+          0,
+          1086,
+          406
+        ],
+        [
+          1086,
+          0,
+          1448,
+          406
+        ],
+        [
+          0,
+          406,
+          362,
+          748
+        ],
+        [
+          362,
+          406,
+          724,
+          748
+        ],
+        [
+          724,
+          406,
+          1086,
+          748
+        ],
+        [
+          1086,
+          406,
+          1448,
+          748
+        ],
+        [
+          0,
+          748,
+          362,
+          1086
+        ],
+        [
+          362,
+          748,
+          724,
+          1086
+        ],
+        [
+          724,
+          748,
+          1086,
+          1086
+        ],
+        [
+          1086,
+          748,
+          1448,
+          1086
+        ]
+      ]
+    },
+    {
+      "source": "kikki-smoking.png",
+      "key": "smoke",
+      "count": 4,
+      "size": [
+        1254,
+        1254
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          627,
+          627
+        ],
+        [
+          627,
+          0,
+          1254,
+          627
+        ],
+        [
+          0,
+          627,
+          627,
+          1254
+        ],
+        [
+          627,
+          627,
+          1254,
+          1254
+        ]
+      ]
+    },
+    {
+      "source": "kikki-hair-heart.png",
+      "key": "hairHeart",
+      "count": 6,
+      "size": [
+        1536,
+        1024
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          1024,
+          512
+        ],
+        [
+          1024,
+          0,
+          1536,
+          512
+        ],
+        [
+          0,
+          512,
+          512,
+          1024
+        ],
+        [
+          512,
+          512,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          512,
+          1536,
+          1024
+        ]
+      ]
+    },
+    {
+      "source": "kikki-spicy-noodles.png",
+      "key": "noodles",
+      "count": 6,
+      "size": [
+        1536,
+        1024
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          1024,
+          512
+        ],
+        [
+          1024,
+          0,
+          1536,
+          512
+        ],
+        [
+          0,
+          512,
+          512,
+          1024
+        ],
+        [
+          512,
+          512,
+          1024,
+          1024
+        ],
+        [
+          1024,
+          512,
+          1536,
+          1024
+        ]
+      ]
+    },
+    {
+      "source": "kikki-cymbals-stretch.png",
+      "key": "extra",
+      "count": 8,
+      "size": [
+        1774,
+        887
+      ],
+      "cells": [
+        [
+          0,
+          0,
+          467,
+          530
+        ],
+        [
+          467,
+          0,
+          877,
+          530
+        ],
+        [
+          877,
+          0,
+          1284,
+          530
+        ],
+        [
+          1284,
+          0,
+          1774,
+          530
+        ],
+        [
+          0,
+          530,
+          433,
+          887
+        ],
+        [
+          433,
+          530,
+          883,
+          887
+        ],
+        [
+          883,
+          530,
+          1352,
+          887
+        ],
+        [
+          1352,
+          530,
+          1774,
+          887
+        ]
+      ]
+    }
+  ],
+  "frameCount": 257
+}

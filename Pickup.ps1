@@ -28,6 +28,12 @@ function Update-PhonePickup([double]$dropTime) {
  # The phone is drawn in the gripping hand in these frames, never animated alone.
  $script:fallingPhone.Visibility='Hidden'
  $script:pet.Source=$script:pickupSprites[$stage]
+ if ($script:visualStyle -eq '3d' -and $script:motion) {
+  $starts=@(3.2,3.75,4.2,4.9); $sub=0
+  if ($stage -lt 3) { $sub=[Math]::Min(3,[Math]::Max(0,[Math]::Floor(($dropTime-$starts[$stage])/($starts[$stage+1]-$starts[$stage])*4))) }
+  $script:pet.Source=$script:pickupSmoothSprites[($stage*4+$sub)]
+  $script:pet.Opacity=1; $script:restBlend.Visibility='Hidden'; return
+ }
  $blend=[Math]::Min(1,($dropTime-$script:pickupChanged)/0.14)
  $script:pet.Opacity=$blend
  $script:restBlend.Source=$script:pickupPrevious
